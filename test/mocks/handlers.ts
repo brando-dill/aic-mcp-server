@@ -560,6 +560,30 @@ export const handlers = [
     return HttpResponse.json({ _id: params.policyId });
   }),
 
+  // AM - Global service config - GET (generic, for non-CORS global services like OAuth2Provider)
+  // Placed after CorsService-specific handlers so CorsService paths are matched first
+  http.get('https://*/am/json/global-config/services/:serviceName/configuration', ({ params, request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    return HttpResponse.json({
+      _id: params.serviceName,
+      _rev: 'rev-global-service-123',
+      _type: { _id: params.serviceName, name: String(params.serviceName) },
+      enabled: true
+    });
+  }),
+
+  // AM - Global service config - PUT (generic, for non-CORS global services)
+  // Placed after CorsService-specific handlers so CorsService paths are matched first
+  http.put('https://*/am/json/global-config/services/:serviceName/configuration', async ({ params, request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    const body = (await request.json()) as Record<string, any>;
+    return HttpResponse.json({ _id: params.serviceName, ...body });
+  }),
+
   // AM - Services - list all configured services (POST _action=nextdescendents)
   http.post('https://*/am/json/*/services', ({ request }) => {
     const authError = validateAuthHeader(request);

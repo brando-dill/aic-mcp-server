@@ -37,3 +37,4 @@ export { createSamlHostedEntityTool } from './createSamlHostedEntity.js';
 export { createSamlRemoteEntityTool } from './createSamlRemoteEntity.js';
 export { updateSamlEntityTool } from './updateSamlEntity.js';
 export { deleteSamlEntityTool } from './deleteSamlEntity.js';
+export { applyGlobalAmServiceTool } from './applyGlobalAmService.js';
