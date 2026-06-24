@@ -1,0 +1,24 @@
+{
+  "name": "listSocialProviders",
+  "title": "List Social Identity Providers",
+  "description": "List all configured Social Identity Provider instances across all provider types on the AM SocialIdentityProviders service. Returns all provider instances with their type and configuration. Uses the nextdescendents action to retrieve all sub-configurations at once.",
+  "scopes": [
+    "fr:am:*"
+  ],
+  "inputSchema": {
+    "realm": {
+      "_def": {
+        "values": [
+          "alpha",
+          "bravo"
+        ],
+        "typeName": "ZodEnum",
+        "description": "The realm to query (alpha or bravo)"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}

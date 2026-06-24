@@ -22,3 +22,8 @@ export { getCorsPolicyTool } from './getCorsPolicy.js';
 export { createCorsPolicyTool } from './createCorsPolicy.js';
 export { updateCorsPolicyTool } from './updateCorsPolicy.js';
 export { deleteCorsPolicyTool } from './deleteCorsPolicy.js';
+export { listAmServiceTypesTool } from './listAmServiceTypes.js';
+export { listSocialProvidersTool } from './listSocialProviders.js';
+export { getSocialProviderTool } from './getSocialProvider.js';
+export { setSocialProviderTool } from './setSocialProvider.js';
+export { deleteSocialProviderTool } from './deleteSocialProvider.js';

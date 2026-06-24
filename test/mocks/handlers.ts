@@ -558,5 +558,90 @@ export const handlers = [
     if (authError) return authError;
 
     return HttpResponse.json({ _id: params.policyId });
-  })
+  }),
+
+  // AM - SocialIdentityProviders - list all types (GET with _action=getAllTypes)
+  http.get('https://*/am/json/*/realm-config/services/SocialIdentityProviders', ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    const url = new URL(request.url);
+    if (url.searchParams.get('_action') === 'getAllTypes') {
+      return HttpResponse.json({
+        result: [
+          { _id: 'google', name: 'Google', description: 'Google Identity Provider' },
+          { _id: 'facebook', name: 'Facebook', description: 'Facebook Identity Provider' },
+          { _id: 'oidcConfig', name: 'OpenID Connect', description: 'Generic OIDC Provider' }
+        ],
+        resultCount: 3
+      });
+    }
+
+    return HttpResponse.json({ result: [], resultCount: 0 });
+  }),
+
+  // AM - SocialIdentityProviders - list all provider instances (POST with _action=nextdescendents)
+  http.post('https://*/am/json/*/realm-config/services/SocialIdentityProviders', ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    const url = new URL(request.url);
+    if (url.searchParams.get('_action') === 'nextdescendents') {
+      return HttpResponse.json({
+        result: [
+          {
+            _id: 'google-provider',
+            _type: { _id: 'google', name: 'Google' },
+            clientId: 'mock-client-id',
+            redirectURI: 'https://example.com/callback'
+          }
+        ],
+        resultCount: 1
+      });
+    }
+
+    return HttpResponse.json({ result: [], resultCount: 0 });
+  }),
+
+  // AM - SocialIdentityProviders - get/update/delete single provider by type and id
+  http.get(
+    'https://*/am/json/*/realm-config/services/SocialIdentityProviders/:providerType/:providerId',
+    ({ params, request }) => {
+      const authError = validateAuthHeader(request);
+      if (authError) return authError;
+
+      return HttpResponse.json({
+        _id: params.providerId,
+        _type: { _id: params.providerType, name: String(params.providerType) },
+        clientId: 'mock-client-id',
+        clientSecret: 'mock-client-secret',
+        redirectURI: 'https://example.com/callback',
+        scopes: ['openid', 'profile', 'email']
+      });
+    }
+  ),
+
+  http.put(
+    'https://*/am/json/*/realm-config/services/SocialIdentityProviders/:providerType/:providerId',
+    async ({ params, request }) => {
+      const authError = validateAuthHeader(request);
+      if (authError) return authError;
+
+      const body = (await request.json()) as Record<string, any>;
+      return HttpResponse.json({ _id: params.providerId, ...body });
+    }
+  ),
+
+  http.delete(
+    'https://*/am/json/*/realm-config/services/SocialIdentityProviders/:providerType/:providerId',
+    ({ request }) => {
+      const authError = validateAuthHeader(request);
+      if (authError) return authError;
+
+      return new HttpResponse(null, {
+        status: 204,
+        headers: { 'x-forgerock-transactionid': 'mock-tx-id-delete' }
+      });
+    }
+  )
 ];

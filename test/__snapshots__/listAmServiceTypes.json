@@ -1,0 +1,24 @@
+{
+  "name": "listAmServiceTypes",
+  "title": "List AM Social Identity Provider Service Types",
+  "description": "List all available Social Identity Provider type schemas on the AM SocialIdentityProviders service. Returns the type descriptors including type IDs, names, and configuration schema metadata. Use this to discover supported provider types (e.g., google, facebook, apple) before creating a new provider instance.",
+  "scopes": [
+    "fr:am:*"
+  ],
+  "inputSchema": {
+    "realm": {
+      "_def": {
+        "values": [
+          "alpha",
+          "bravo"
+        ],
+        "typeName": "ZodEnum",
+        "description": "The realm to query (alpha or bravo)"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}
