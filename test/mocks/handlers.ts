@@ -244,6 +244,39 @@ export const handlers = [
     return HttpResponse.json({ _id: params.variableId });
   }),
 
+  // Secrets
+  http.get('https://*/environment/secrets/:secretId', ({ params, request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    return HttpResponse.json({
+      _id: params.secretId,
+      description: 'Mock secret',
+      encoding: 'generic',
+      useInPlaceholders: false,
+      lastChangeDate: '2025-01-11T10:00:00Z',
+      lastChangedBy: 'user-123',
+      loaded: true,
+      loadedVersion: '1',
+      activeVersion: '1'
+    });
+  }),
+
+  http.put('https://*/environment/secrets/:secretId', async ({ request, params }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    const body = (await request.json()) as Record<string, any>;
+    return HttpResponse.json({ _id: params.secretId, ...body });
+  }),
+
+  http.delete('https://*/environment/secrets/:secretId', ({ params, request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    return HttpResponse.json({ _id: params.secretId });
+  }),
+
   // Logs
   http.get('https://*/monitoring/logs/sources', ({ request }) => {
     const authError = validateAuthHeader(request);
