@@ -560,6 +560,83 @@ export const handlers = [
     return HttpResponse.json({ _id: params.policyId });
   }),
 
+  // AM - Services - list all configured services (POST _action=nextdescendents)
+  http.post('https://*/am/json/*/services', ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    const url = new URL(request.url);
+    if (url.searchParams.get('_action') === 'nextdescendents') {
+      return HttpResponse.json({
+        result: [
+          {
+            _id: 'scripting',
+            _type: { _id: 'scripting', name: 'Scripting' }
+          },
+          {
+            _id: 'SocialIdentityProviders',
+            _type: { _id: 'SocialIdentityProviders', name: 'Social Identity Provider' }
+          }
+        ],
+        resultCount: 2
+      });
+    }
+
+    return HttpResponse.json({ result: [], resultCount: 0 });
+  }),
+
+  // AM - Services - get service type schemas (GET _action=getAllTypes)
+  http.get('https://*/am/json/*/services', ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    const url = new URL(request.url);
+    if (url.searchParams.get('_action') === 'getAllTypes') {
+      return HttpResponse.json({
+        result: [
+          { _id: 'scripting', name: 'Scripting', description: 'Scripting service' },
+          { _id: 'SocialIdentityProviders', name: 'Social Identity Provider', description: 'Social IdP service' },
+          { _id: 'validation', name: 'Validation', description: 'Validation service' }
+        ],
+        resultCount: 3
+      });
+    }
+
+    return HttpResponse.json({ result: [], resultCount: 0 });
+  }),
+
+  // AM - Services - get single service config (GET by serviceType)
+  http.get('https://*/am/json/*/services/:serviceType', ({ params, request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    return HttpResponse.json({
+      _id: params.serviceType,
+      _rev: 'rev-service-123',
+      _type: { _id: params.serviceType, name: String(params.serviceType) }
+    });
+  }),
+
+  // AM - Services - update/create service config (PUT by serviceType)
+  http.put('https://*/am/json/*/services/:serviceType', async ({ params, request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    const body = (await request.json()) as Record<string, any>;
+    return HttpResponse.json({ _id: params.serviceType, ...body });
+  }),
+
+  // AM - Services - delete service (DELETE by serviceType)
+  http.delete('https://*/am/json/*/services/:serviceType', ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    return new HttpResponse(null, {
+      status: 204,
+      headers: { 'x-forgerock-transactionid': 'mock-tx-id-service-delete' }
+    });
+  }),
+
   // AM - SocialIdentityProviders - list all types (GET with _action=getAllTypes)
   http.get('https://*/am/json/*/realm-config/services/SocialIdentityProviders', ({ request }) => {
     const authError = validateAuthHeader(request);

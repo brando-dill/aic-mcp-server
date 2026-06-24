@@ -1,0 +1,24 @@
+{
+  "name": "listAmServices",
+  "title": "List AM Services",
+  "description": "List all configured AM services in a realm using the nextdescendents action. Returns all service instances with their type and current configuration. Uses accept-api-version: protocol=2.0,resource=1.0.",
+  "scopes": [
+    "fr:am:*"
+  ],
+  "inputSchema": {
+    "realm": {
+      "_def": {
+        "values": [
+          "alpha",
+          "bravo"
+        ],
+        "typeName": "ZodEnum",
+        "description": "The realm to query (alpha or bravo)"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}

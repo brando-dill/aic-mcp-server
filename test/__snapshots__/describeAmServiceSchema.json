@@ -1,0 +1,24 @@
+{
+  "name": "describeAmServiceSchema",
+  "title": "Describe AM Service Schema",
+  "description": "Retrieve available AM service type descriptors and schema metadata for a realm using the getAllTypes action. Returns a list of all service types with their schema information. Useful for discovering what services can be configured. Uses accept-api-version: protocol=2.0,resource=1.0.",
+  "scopes": [
+    "fr:am:*"
+  ],
+  "inputSchema": {
+    "realm": {
+      "_def": {
+        "values": [
+          "alpha",
+          "bravo"
+        ],
+        "typeName": "ZodEnum",
+        "description": "The realm to query for service type schemas (alpha or bravo)"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}

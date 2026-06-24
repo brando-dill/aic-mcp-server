@@ -58,6 +58,26 @@ export const AM_CORS_HEADERS = {
 } as const;
 
 /**
+ * Headers for AM services list and action endpoints (protocol=2.0,resource=1.0).
+ * Used for service list operations (nextdescendents, getAllTypes) against
+ * realm-scoped /services endpoints.
+ */
+export const AM_SERVICES_LIST_HEADERS = {
+  'accept-api-version': 'protocol=2.0,resource=1.0',
+  'Content-Type': 'application/json'
+} as const;
+
+/**
+ * Headers for AM individual service configuration endpoints (protocol=2.1,resource=1.0).
+ * Used for GET/PUT/DELETE operations on a specific service type and for
+ * sub-config instance CRUD.
+ */
+export const AM_SERVICES_HEADERS = {
+  'accept-api-version': 'protocol=2.1,resource=1.0',
+  'Content-Type': 'application/json'
+} as const;
+
+/**
  * Fixed node IDs for journey terminal nodes.
  * These are constants defined by AM and must not be changed.
  */

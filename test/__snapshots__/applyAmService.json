@@ -1,0 +1,97 @@
+{
+  "name": "applyAmService",
+  "title": "Apply AM Service Configuration",
+  "description": "Apply configuration changes to an AM service using a read-merge-write pattern. Fetches the current service configuration, strips _rev, spreads caller-supplied serviceConfig fields on top, and PUTs the merged payload back. A 404 on GET is surfaced as an error — callers must supply a full config for creates (no partial merge on a missing service). Fields not supplied in serviceConfig are preserved from the existing configuration.",
+  "scopes": [
+    "fr:am:*"
+  ],
+  "inputSchema": {
+    "realm": {
+      "_def": {
+        "values": [
+          "alpha",
+          "bravo"
+        ],
+        "typeName": "ZodEnum",
+        "description": "The realm containing the service (alpha or bravo)"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "serviceType": {
+      "_def": {
+        "schema": {
+          "_def": {
+            "schema": {
+              "_def": {
+                "checks": [
+                  {
+                    "kind": "min",
+                    "value": 1,
+                    "message": "Value cannot be empty"
+                  }
+                ],
+                "typeName": "ZodString",
+                "coerce": false
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "typeName": "ZodEffects",
+            "effect": {
+              "type": "refinement"
+            }
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodEffects",
+        "effect": {
+          "type": "refinement"
+        },
+        "description": "The service type identifier (e.g., \"SocialIdentityProviders\", \"validation\")"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "serviceConfig": {
+      "_def": {
+        "keyType": {
+          "_def": {
+            "checks": [],
+            "typeName": "ZodString",
+            "coerce": false
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "valueType": {
+          "_def": {
+            "typeName": "ZodAny"
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          },
+          "_any": true
+        },
+        "typeName": "ZodRecord",
+        "description": "Partial or full service configuration fields to merge into the existing service configuration"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}
