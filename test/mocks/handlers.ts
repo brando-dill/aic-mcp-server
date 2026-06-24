@@ -965,5 +965,26 @@ export const handlers = [
     const authError = validateAuthHeader(request);
     if (authError) return authError;
     return new HttpResponse(null, { status: 204, headers: { 'x-forgerock-transactionid': 'mock-tx-cert-delete' } });
+  }),
+
+  // Workflow - themerealm config GET
+  http.get('https://*/openidm/config/ui/themerealm', ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+    return HttpResponse.json({
+      _id: 'ui/themerealm',
+      realm: {
+        alpha: [{ _id: 'theme-existing-id', name: 'Default', isDefault: true, primaryColor: '#000000' }],
+        bravo: []
+      }
+    });
+  }),
+
+  // Workflow - themerealm config PUT
+  http.put('https://*/openidm/config/ui/themerealm', async ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+    const body = (await request.json()) as Record<string, any>;
+    return HttpResponse.json({ ...body });
   })
 ];

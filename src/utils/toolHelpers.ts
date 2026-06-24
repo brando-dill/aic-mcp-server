@@ -7,6 +7,7 @@ import * as featureManagementTools from '../tools/featureManagement/index.js';
 import * as tenantConfigTools from '../tools/tenantConfig/index.js';
 import * as amTools from '../tools/am/index.js';
 import * as applicationTools from '../tools/applications/index.js';
+import * as workflowTools from '../tools/workflow/index.js';
 
 /**
  * Collects all tools from all tool categories
@@ -29,6 +30,7 @@ export function getAllTools(): Tool[] {
   if (!isDockerMode) {
     tools.push(...(Object.values(amTools) as Tool[]));
     tools.push(...(Object.values(applicationTools) as Tool[]));
+    tools.push(...(Object.values(workflowTools) as Tool[]));
   }
 
   return tools;
