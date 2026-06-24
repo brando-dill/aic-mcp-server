@@ -1,0 +1,199 @@
+{
+  "name": "deleteEnvironmentConfiguration",
+  "title": "Delete Environment Configuration",
+  "description": "Delete one or more environment configuration items (secrets, variables, and/or certificates) from PingOne AIC. At least one target array must be supplied. Failures on individual items are collected and returned without stopping the remaining deletions.",
+  "scopes": [
+    "fr:idc:esv:update"
+  ],
+  "inputSchema": {
+    "secretIds": {
+      "_def": {
+        "innerType": {
+          "_def": {
+            "type": {
+              "_def": {
+                "schema": {
+                  "_def": {
+                    "schema": {
+                      "_def": {
+                        "checks": [
+                          {
+                            "kind": "min",
+                            "value": 1,
+                            "message": "Value cannot be empty"
+                          }
+                        ],
+                        "typeName": "ZodString",
+                        "coerce": false
+                      },
+                      "~standard": {
+                        "version": 1,
+                        "vendor": "zod"
+                      }
+                    },
+                    "typeName": "ZodEffects",
+                    "effect": {
+                      "type": "refinement"
+                    }
+                  },
+                  "~standard": {
+                    "version": 1,
+                    "vendor": "zod"
+                  }
+                },
+                "typeName": "ZodEffects",
+                "effect": {
+                  "type": "refinement"
+                }
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "minLength": null,
+            "maxLength": null,
+            "exactLength": null,
+            "typeName": "ZodArray"
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodOptional",
+        "description": "Secret IDs to delete"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "variableIds": {
+      "_def": {
+        "innerType": {
+          "_def": {
+            "type": {
+              "_def": {
+                "schema": {
+                  "_def": {
+                    "schema": {
+                      "_def": {
+                        "checks": [
+                          {
+                            "kind": "min",
+                            "value": 1,
+                            "message": "Value cannot be empty"
+                          }
+                        ],
+                        "typeName": "ZodString",
+                        "coerce": false
+                      },
+                      "~standard": {
+                        "version": 1,
+                        "vendor": "zod"
+                      }
+                    },
+                    "typeName": "ZodEffects",
+                    "effect": {
+                      "type": "refinement"
+                    }
+                  },
+                  "~standard": {
+                    "version": 1,
+                    "vendor": "zod"
+                  }
+                },
+                "typeName": "ZodEffects",
+                "effect": {
+                  "type": "refinement"
+                }
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "minLength": null,
+            "maxLength": null,
+            "exactLength": null,
+            "typeName": "ZodArray"
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodOptional",
+        "description": "Variable IDs to delete"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "certificateIds": {
+      "_def": {
+        "innerType": {
+          "_def": {
+            "type": {
+              "_def": {
+                "schema": {
+                  "_def": {
+                    "schema": {
+                      "_def": {
+                        "checks": [
+                          {
+                            "kind": "min",
+                            "value": 1,
+                            "message": "Value cannot be empty"
+                          }
+                        ],
+                        "typeName": "ZodString",
+                        "coerce": false
+                      },
+                      "~standard": {
+                        "version": 1,
+                        "vendor": "zod"
+                      }
+                    },
+                    "typeName": "ZodEffects",
+                    "effect": {
+                      "type": "refinement"
+                    }
+                  },
+                  "~standard": {
+                    "version": 1,
+                    "vendor": "zod"
+                  }
+                },
+                "typeName": "ZodEffects",
+                "effect": {
+                  "type": "refinement"
+                }
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "minLength": null,
+            "maxLength": null,
+            "exactLength": null,
+            "typeName": "ZodArray"
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodOptional",
+        "description": "Certificate IDs to delete"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}

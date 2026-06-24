@@ -1,0 +1,81 @@
+{
+  "name": "deleteApplicationConfiguration",
+  "title": "Delete Application Configuration",
+  "description": "Deletes an application and all associated AM configuration. Removes the IDM managed application, optionally deletes the linked AM OAuth2Client, and optionally deletes a SAML 2.0 entity.",
+  "scopes": [
+    "fr:am:*",
+    "fr:idm:*"
+  ],
+  "inputSchema": {
+    "realm": {
+      "_def": {
+        "values": [
+          "alpha",
+          "bravo"
+        ],
+        "typeName": "ZodEnum",
+        "description": "The realm containing the application (alpha or bravo)"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "applicationName": {
+      "_def": {
+        "checks": [],
+        "typeName": "ZodString",
+        "coerce": false,
+        "description": "Name of the application to delete"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "samlEntityId": {
+      "_def": {
+        "innerType": {
+          "_def": {
+            "checks": [],
+            "typeName": "ZodString",
+            "coerce": false
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodOptional",
+        "description": "SAML 2.0 entity ID to delete (plain text, will be base64-encoded)"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "samlLocation": {
+      "_def": {
+        "innerType": {
+          "_def": {
+            "values": [
+              "hosted",
+              "remote"
+            ],
+            "typeName": "ZodEnum"
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodOptional",
+        "description": "SAML entity location: hosted or remote"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}

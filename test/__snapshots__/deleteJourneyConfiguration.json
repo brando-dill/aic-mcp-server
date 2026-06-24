@@ -1,0 +1,128 @@
+{
+  "name": "deleteJourneyConfiguration",
+  "title": "Delete Journey Configuration",
+  "description": "Delete an authentication journey and optionally its associated scripts. Returns a summary of deleted resources and any errors. Script failures do not abort the operation.",
+  "scopes": [
+    "fr:am:*"
+  ],
+  "inputSchema": {
+    "realm": {
+      "_def": {
+        "values": [
+          "alpha",
+          "bravo"
+        ],
+        "typeName": "ZodEnum"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "journeyName": {
+      "_def": {
+        "schema": {
+          "_def": {
+            "schema": {
+              "_def": {
+                "checks": [
+                  {
+                    "kind": "min",
+                    "value": 1,
+                    "message": "Value cannot be empty"
+                  }
+                ],
+                "typeName": "ZodString",
+                "coerce": false
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "typeName": "ZodEffects",
+            "effect": {
+              "type": "refinement"
+            }
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodEffects",
+        "effect": {
+          "type": "refinement"
+        },
+        "description": "Name of the journey to delete"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "scriptIds": {
+      "_def": {
+        "innerType": {
+          "_def": {
+            "type": {
+              "_def": {
+                "schema": {
+                  "_def": {
+                    "schema": {
+                      "_def": {
+                        "checks": [
+                          {
+                            "kind": "min",
+                            "value": 1,
+                            "message": "Value cannot be empty"
+                          }
+                        ],
+                        "typeName": "ZodString",
+                        "coerce": false
+                      },
+                      "~standard": {
+                        "version": 1,
+                        "vendor": "zod"
+                      }
+                    },
+                    "typeName": "ZodEffects",
+                    "effect": {
+                      "type": "refinement"
+                    }
+                  },
+                  "~standard": {
+                    "version": 1,
+                    "vendor": "zod"
+                  }
+                },
+                "typeName": "ZodEffects",
+                "effect": {
+                  "type": "refinement"
+                }
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "minLength": null,
+            "maxLength": null,
+            "exactLength": null,
+            "typeName": "ZodArray"
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodOptional",
+        "description": "Script IDs to also delete"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}

@@ -1,0 +1,195 @@
+{
+  "name": "readAuditLogs",
+  "title": "Read Audit Logs",
+  "description": "Read audit logs from PingOne AIC for workflow observability. Supports filtering by user ID, event types, and time window. Optionally enriches results with user context from IDM when a userId and realm are provided.",
+  "scopes": [
+    "fr:idc:monitoring:*",
+    "fr:idm:*"
+  ],
+  "inputSchema": {
+    "logSources": {
+      "_def": {
+        "type": {
+          "_def": {
+            "checks": [],
+            "typeName": "ZodString",
+            "coerce": false
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "minLength": {
+          "value": 1
+        },
+        "maxLength": null,
+        "exactLength": null,
+        "typeName": "ZodArray",
+        "description": "Log source names (e.g., [\"am-core\", \"idm-core\"])"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "userId": {
+      "_def": {
+        "innerType": {
+          "_def": {
+            "checks": [],
+            "typeName": "ZodString",
+            "coerce": false
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodOptional",
+        "description": "Filter by user ID"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "realm": {
+      "_def": {
+        "innerType": {
+          "_def": {
+            "values": [
+              "alpha",
+              "bravo"
+            ],
+            "typeName": "ZodEnum"
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodOptional",
+        "description": "Realm for user context enrichment (required if userId supplied for enrichment)"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "timeWindow": {
+      "_def": {
+        "innerType": {
+          "_def": {
+            "unknownKeys": "strip",
+            "catchall": {
+              "_def": {
+                "typeName": "ZodNever"
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "typeName": "ZodObject"
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          },
+          "_cached": null
+        },
+        "typeName": "ZodOptional",
+        "description": "Time window to restrict log results"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "eventTypes": {
+      "_def": {
+        "innerType": {
+          "_def": {
+            "type": {
+              "_def": {
+                "checks": [],
+                "typeName": "ZodString",
+                "coerce": false
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "minLength": null,
+            "maxLength": null,
+            "exactLength": null,
+            "typeName": "ZodArray"
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodOptional",
+        "description": "Event type names to filter on"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "pageSize": {
+      "_def": {
+        "innerType": {
+          "_def": {
+            "checks": [
+              {
+                "kind": "int"
+              },
+              {
+                "kind": "min",
+                "value": 0,
+                "inclusive": false
+              }
+            ],
+            "typeName": "ZodNumber",
+            "coerce": false
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodOptional",
+        "description": "Maximum number of log entries to return"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "pagedResultsCookie": {
+      "_def": {
+        "innerType": {
+          "_def": {
+            "checks": [],
+            "typeName": "ZodString",
+            "coerce": false
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodOptional",
+        "description": "Opaque pagination cookie from a previous response to retrieve the next page"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}

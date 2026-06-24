@@ -334,6 +334,20 @@ export const handlers = [
     });
   }),
 
+  http.get('https://*/monitoring/logs/tail', ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    return HttpResponse.json({
+      result: [],
+      resultCount: 0,
+      totalPagedResults: -1,
+      pagedResultsCookie: null,
+      remainingPagedResults: -1,
+      totalPagedResultsPolicy: 'NONE'
+    });
+  }),
+
   // AM - Journey list
   http.get('https://*/am/json/*/realm-config/authentication/authenticationtrees/trees', ({ request }) => {
     const authError = validateAuthHeader(request);
