@@ -244,6 +244,44 @@ export const handlers = [
     return HttpResponse.json({ _id: params.variableId });
   }),
 
+  // Secret versions - list all versions for a secret
+  http.get('https://*/environment/secrets/:secretId/versions', ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    return HttpResponse.json({
+      result: [
+        { version: '1', status: 'DISABLED', createDate: '2025-01-10T08:00:00Z' },
+        { version: '2', status: 'ENABLED', createDate: '2025-01-11T10:00:00Z' }
+      ],
+      resultCount: 2
+    });
+  }),
+
+  // Secret versions - create new version (_action=create)
+  http.post('https://*/environment/secrets/:secretId/versions', async ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    return HttpResponse.json({
+      version: '3',
+      status: 'DISABLED',
+      createDate: '2025-06-22T10:00:00Z'
+    });
+  }),
+
+  // Secret versions - change status for a specific version (_action=changestatus)
+  http.post('https://*/environment/secrets/:secretId/versions/:version', async ({ params, request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    return HttpResponse.json({
+      version: params.version,
+      status: 'ENABLED',
+      createDate: '2025-01-11T10:00:00Z'
+    });
+  }),
+
   // Secrets
   http.get('https://*/environment/secrets/:secretId', ({ params, request }) => {
     const authError = validateAuthHeader(request);
