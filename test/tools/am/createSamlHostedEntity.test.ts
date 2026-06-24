@@ -12,7 +12,12 @@ describe('createSamlHostedEntity', () => {
     entityId: 'https://example.com/saml/hosted',
     roles: ['SPSSODescriptor'],
     assertionConsumerService: [
-      { index: 0, isDefault: true, binding: 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST', location: 'https://example.com/acs' }
+      {
+        index: 0,
+        isDefault: true,
+        binding: 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+        location: 'https://example.com/acs'
+      }
     ]
   };
 
@@ -85,7 +90,9 @@ describe('createSamlHostedEntity', () => {
 
     it('should accept any key-value pairs in entityConfig', () => {
       const schema = createSamlHostedEntityTool.inputSchema.entityConfig;
-      expect(() => schema.parse({ entityId: 'https://example.com', roles: ['SPSSODescriptor'], custom: 42 })).not.toThrow();
+      expect(() =>
+        schema.parse({ entityId: 'https://example.com', roles: ['SPSSODescriptor'], custom: 42 })
+      ).not.toThrow();
     });
   });
 

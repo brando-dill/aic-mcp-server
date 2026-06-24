@@ -111,12 +111,9 @@ describe('getSocialProvider', () => {
       { status: 404, desc: '404 Not Found' }
     ])('should handle $desc', async ({ status }) => {
       server.use(
-        http.get(
-          'https://*/am/json/*/realm-config/services/SocialIdentityProviders/:providerType/:providerId',
-          () => {
-            return new HttpResponse(JSON.stringify({ error: 'error' }), { status });
-          }
-        )
+        http.get('https://*/am/json/*/realm-config/services/SocialIdentityProviders/:providerType/:providerId', () => {
+          return new HttpResponse(JSON.stringify({ error: 'error' }), { status });
+        })
       );
 
       const result = await getSocialProviderTool.toolFunction({

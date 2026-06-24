@@ -25,16 +25,10 @@ export const applyGlobalAmServiceTool = {
       .record(z.any())
       .describe('Partial or full service configuration fields to merge into the existing global service configuration')
   },
-  async toolFunction({
-    serviceName,
-    serviceConfig
-  }: {
-    serviceName: string;
-    serviceConfig: Record<string, unknown>;
-  }) {
+  async toolFunction({ serviceName, serviceConfig }: { serviceName: string; serviceConfig: Record<string, unknown> }) {
     try {
       // accept-api-version: resource=1.0 — matching AM_CORS_HEADERS pattern for global config endpoints (AD-15)
-      const url = buildAMGlobalConfigUrl(serviceName);
+      const url = buildAMGlobalConfigUrl(encodeURIComponent(serviceName));
 
       // Fetch existing global service configuration
       const { data: fetchedService } = await makeAuthenticatedRequest(url, SCOPES, {
@@ -63,9 +57,7 @@ export const applyGlobalAmServiceTool = {
 
       return createToolResponse(formatSuccess(data, response));
     } catch (error: any) {
-      return createToolResponse(
-        `Failed to apply global AM service "${serviceName}": ${error.message}`
-      );
+      return createToolResponse(`Failed to apply global AM service "${serviceName}": ${error.message}`);
     }
   }
 };

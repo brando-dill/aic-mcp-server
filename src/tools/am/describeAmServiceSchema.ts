@@ -30,9 +30,7 @@ export const describeAmServiceSchemaTool = {
 
       return createToolResponse(formatSuccess(data, response));
     } catch (error: any) {
-      return createToolResponse(
-        `Failed to describe AM service schemas for realm "${realm}": ${error.message}`
-      );
+      return createToolResponse(`Failed to describe AM service schemas for realm "${realm}": ${error.message}`);
     }
   }
 };

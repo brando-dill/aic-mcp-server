@@ -67,9 +67,7 @@ describe('createSecretVersion', () => {
 
       const [url] = getSpy().mock.calls.at(-1)!;
       expect(url).toContain('esv-api-key-prod');
-      expect(url).toBe(
-        'https://test.forgeblocks.com/environment/secrets/esv-api-key-prod/versions?_action=create'
-      );
+      expect(url).toBe('https://test.forgeblocks.com/environment/secrets/esv-api-key-prod/versions?_action=create');
     });
   });
 

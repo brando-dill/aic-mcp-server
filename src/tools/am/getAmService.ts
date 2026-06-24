@@ -33,9 +33,7 @@ export const getAmServiceTool = {
 
       return createToolResponse(formatSuccess(data, response));
     } catch (error: any) {
-      return createToolResponse(
-        `Failed to get AM service "${serviceType}" for realm "${realm}": ${error.message}`
-      );
+      return createToolResponse(`Failed to get AM service "${serviceType}" for realm "${realm}": ${error.message}`);
     }
   }
 };

@@ -16,7 +16,11 @@ describe('getSamlEntity', () => {
   // ===== REQUEST CONSTRUCTION TESTS =====
   describe('Request Construction', () => {
     it('should build URL with location and entityId64 in the path', async () => {
-      await getSamlEntityTool.toolFunction({ realm: 'alpha', location: 'hosted', entityId64: 'aHR0cHM6Ly9leGFtcGxlLmNvbQ==' });
+      await getSamlEntityTool.toolFunction({
+        realm: 'alpha',
+        location: 'hosted',
+        entityId64: 'aHR0cHM6Ly9leGFtcGxlLmNvbQ=='
+      });
 
       const [url, scopes, options] = getSpy().mock.calls[0];
       expect(url).toBe(
@@ -62,7 +66,11 @@ describe('getSamlEntity', () => {
         })
       );
 
-      const result = await getSamlEntityTool.toolFunction({ realm: 'alpha', location: 'hosted', entityId64: 'entity123' });
+      const result = await getSamlEntityTool.toolFunction({
+        realm: 'alpha',
+        location: 'hosted',
+        entityId64: 'entity123'
+      });
 
       const parsed = JSON.parse(result.content[0].text);
       expect(parsed._id).toBe('entity123');
@@ -112,7 +120,11 @@ describe('getSamlEntity', () => {
         })
       );
 
-      const result = await getSamlEntityTool.toolFunction({ realm: 'alpha', location: 'hosted', entityId64: 'nonexistent' });
+      const result = await getSamlEntityTool.toolFunction({
+        realm: 'alpha',
+        location: 'hosted',
+        entityId64: 'nonexistent'
+      });
 
       expect(result.content[0].text).toContain('Failed to get SAML entity');
       expect(result.content[0].text).toContain('nonexistent');

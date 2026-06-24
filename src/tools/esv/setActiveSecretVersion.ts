@@ -17,9 +17,7 @@ export const setActiveSecretVersionTool = {
   },
   inputSchema: {
     secretId: safePathSegmentSchema.describe('Secret ID (format: esv-*)'),
-    version: safePathSegmentSchema.describe(
-      'Version number or identifier to promote to active status (e.g., "2")'
-    )
+    version: safePathSegmentSchema.describe('Version number or identifier to promote to active status (e.g., "2")')
   },
   async toolFunction({ secretId, version }: { secretId: string; version: string }) {
     try {
@@ -35,9 +33,7 @@ export const setActiveSecretVersionTool = {
 
       return createToolResponse(formatSuccess(data, response));
     } catch (error: any) {
-      return createToolResponse(
-        `Failed to set active version '${version}' for secret '${secretId}': ${error.message}`
-      );
+      return createToolResponse(`Failed to set active version '${version}' for secret '${secretId}': ${error.message}`);
     }
   }
 };

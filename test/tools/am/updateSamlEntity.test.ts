@@ -12,7 +12,12 @@ describe('updateSamlEntity', () => {
 
   const callerOverrides = {
     assertionConsumerService: [
-      { index: 0, isDefault: true, binding: 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST', location: 'https://example.com/acs/new' }
+      {
+        index: 0,
+        isDefault: true,
+        binding: 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+        location: 'https://example.com/acs/new'
+      }
     ]
   };
 
@@ -24,7 +29,12 @@ describe('updateSamlEntity', () => {
   // ===== REQUEST CONSTRUCTION TESTS =====
   describe('Request Construction', () => {
     it('should make GET request first to fetch existing entity', async () => {
-      await updateSamlEntityTool.toolFunction({ realm: 'alpha', location: 'hosted', entityId64, entityConfig: callerOverrides });
+      await updateSamlEntityTool.toolFunction({
+        realm: 'alpha',
+        location: 'hosted',
+        entityId64,
+        entityConfig: callerOverrides
+      });
 
       const firstCall = getSpy().mock.calls[0];
       expect(firstCall[0]).toBe(
@@ -34,7 +44,12 @@ describe('updateSamlEntity', () => {
     });
 
     it('should make PUT request second with merged entity', async () => {
-      await updateSamlEntityTool.toolFunction({ realm: 'alpha', location: 'hosted', entityId64, entityConfig: callerOverrides });
+      await updateSamlEntityTool.toolFunction({
+        realm: 'alpha',
+        location: 'hosted',
+        entityId64,
+        entityConfig: callerOverrides
+      });
 
       const secondCall = getSpy().mock.calls[1];
       expect(secondCall[0]).toBe(
@@ -44,7 +59,12 @@ describe('updateSamlEntity', () => {
     });
 
     it('should use accept-api-version protocol=2.1,resource=1.0 for both calls', async () => {
-      await updateSamlEntityTool.toolFunction({ realm: 'alpha', location: 'hosted', entityId64, entityConfig: callerOverrides });
+      await updateSamlEntityTool.toolFunction({
+        realm: 'alpha',
+        location: 'hosted',
+        entityId64,
+        entityConfig: callerOverrides
+      });
 
       const getOptions = getSpy().mock.calls[0][2];
       const putOptions = getSpy().mock.calls[1][2];
@@ -53,7 +73,12 @@ describe('updateSamlEntity', () => {
     });
 
     it('should use scope fr:am:* for both calls', async () => {
-      await updateSamlEntityTool.toolFunction({ realm: 'alpha', location: 'hosted', entityId64, entityConfig: callerOverrides });
+      await updateSamlEntityTool.toolFunction({
+        realm: 'alpha',
+        location: 'hosted',
+        entityId64,
+        entityConfig: callerOverrides
+      });
 
       expect(getSpy().mock.calls[0][1]).toEqual(['fr:am:*']);
       expect(getSpy().mock.calls[1][1]).toEqual(['fr:am:*']);
@@ -74,7 +99,12 @@ describe('updateSamlEntity', () => {
         })
       );
 
-      await updateSamlEntityTool.toolFunction({ realm: 'alpha', location: 'hosted', entityId64, entityConfig: callerOverrides });
+      await updateSamlEntityTool.toolFunction({
+        realm: 'alpha',
+        location: 'hosted',
+        entityId64,
+        entityConfig: callerOverrides
+      });
 
       const putOptions = getSpy().mock.calls[1][2];
       const body = JSON.parse(putOptions?.body as string);
@@ -152,7 +182,12 @@ describe('updateSamlEntity', () => {
         })
       );
 
-      const result = await updateSamlEntityTool.toolFunction({ realm: 'alpha', location: 'hosted', entityId64, entityConfig: callerOverrides });
+      const result = await updateSamlEntityTool.toolFunction({
+        realm: 'alpha',
+        location: 'hosted',
+        entityId64,
+        entityConfig: callerOverrides
+      });
 
       expect(result.content[0].text).toContain('Failed to update SAML entity');
       expect(result.content[0].text).toContain(entityId64);
@@ -165,7 +200,12 @@ describe('updateSamlEntity', () => {
         })
       );
 
-      const result = await updateSamlEntityTool.toolFunction({ realm: 'alpha', location: 'hosted', entityId64, entityConfig: callerOverrides });
+      const result = await updateSamlEntityTool.toolFunction({
+        realm: 'alpha',
+        location: 'hosted',
+        entityId64,
+        entityConfig: callerOverrides
+      });
 
       expect(result.content[0].text).toContain('Failed to update SAML entity');
     });

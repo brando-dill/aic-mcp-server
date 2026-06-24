@@ -53,23 +53,69 @@ describe('applyGlobalAmService', () => {
       expect(getSpy().mock.calls[1][1]).toEqual(['fr:am:*']);
     });
 
-    it('should URL-encode serviceName in the request URL', async () => {
+    it('should URL-encode serviceName with special characters in the request URL', async () => {
       server.use(
-        http.get(
-          'https://*/am/json/global-config/services/:serviceName/configuration',
-          () => {
-            return HttpResponse.json({ _id: 'My Service', enabled: true });
-          }
-        )
+        http.get('https://*/am/json/global-config/services/:serviceName/configuration', () => {
+          return HttpResponse.json({ _id: 'OAuth2%20Provider', enabled: true });
+        })
       );
 
       await applyGlobalAmServiceTool.toolFunction({
-        serviceName: 'MyService',
+        serviceName: 'OAuth2 Provider',
         serviceConfig: { enabled: false }
       });
 
       const [url] = getSpy().mock.calls[0];
-      expect(url).toContain('/global-config/services/MyService/configuration');
+      expect(url).toContain('/global-config/services/OAuth2%20Provider/configuration');
+    });
+  });
+
+  // ===== RESPONSE HANDLING TESTS =====
+  describe('Response Handling', () => {
+    it('should return merged config fields in the success response text', async () => {
+      server.use(
+        http.get('https://*/am/json/global-config/services/:serviceName/configuration', () => {
+          return HttpResponse.json({
+            _id: 'OAuth2Provider',
+            enabled: true,
+            maxConnections: 50
+          });
+        }),
+        http.put('https://*/am/json/global-config/services/:serviceName/configuration', async ({ request }) => {
+          const body = (await request.json()) as Record<string, unknown>;
+          return HttpResponse.json({ _id: 'OAuth2Provider', ...body });
+        })
+      );
+
+      const result = await applyGlobalAmServiceTool.toolFunction({
+        serviceName: 'OAuth2Provider',
+        serviceConfig: { enabled: false, maxConnections: 100 }
+      });
+
+      expect(result.content[0].text).toContain('OAuth2Provider');
+      expect(result.content[0].text).toContain('"enabled"');
+      expect(result.content[0].text).toContain('"maxConnections"');
+    });
+
+    it('should include the PUT response data in the success response text', async () => {
+      server.use(
+        http.put('https://*/am/json/global-config/services/:serviceName/configuration', async ({ request }) => {
+          const body = (await request.json()) as Record<string, unknown>;
+          return HttpResponse.json({
+            _id: 'CorsService',
+            _type: { _id: 'CorsService', name: 'CORS Service' },
+            ...body
+          });
+        })
+      );
+
+      const result = await applyGlobalAmServiceTool.toolFunction({
+        serviceName: 'CorsService',
+        serviceConfig: { acceptedOrigins: ['https://example.com'] }
+      });
+
+      expect(result.content[0].text).toContain('CorsService');
+      expect(result.content[0].text).toContain('acceptedOrigins');
     });
   });
 
@@ -77,17 +123,14 @@ describe('applyGlobalAmService', () => {
   describe('Application Logic', () => {
     it('should strip _rev from fetched service config before PUT', async () => {
       server.use(
-        http.get(
-          'https://*/am/json/global-config/services/:serviceName/configuration',
-          () => {
-            return HttpResponse.json({
-              _id: 'OAuth2Provider',
-              _rev: 'rev-should-be-stripped',
-              enabled: true,
-              existingField: 'existing-value'
-            });
-          }
-        )
+        http.get('https://*/am/json/global-config/services/:serviceName/configuration', () => {
+          return HttpResponse.json({
+            _id: 'OAuth2Provider',
+            _rev: 'rev-should-be-stripped',
+            enabled: true,
+            existingField: 'existing-value'
+          });
+        })
       );
 
       await applyGlobalAmServiceTool.toolFunction({ serviceName: 'OAuth2Provider', serviceConfig });
@@ -110,17 +153,14 @@ describe('applyGlobalAmService', () => {
 
     it('should merge caller overrides over existing service fields', async () => {
       server.use(
-        http.get(
-          'https://*/am/json/global-config/services/:serviceName/configuration',
-          () => {
-            return HttpResponse.json({
-              _id: 'OAuth2Provider',
-              _type: { _id: 'OAuth2Provider', name: 'OAuth2 Provider' },
-              existingField: 'preserved-value',
-              enabled: true
-            });
-          }
-        )
+        http.get('https://*/am/json/global-config/services/:serviceName/configuration', () => {
+          return HttpResponse.json({
+            _id: 'OAuth2Provider',
+            _type: { _id: 'OAuth2Provider', name: 'OAuth2 Provider' },
+            existingField: 'preserved-value',
+            enabled: true
+          });
+        })
       );
 
       await applyGlobalAmServiceTool.toolFunction({
@@ -136,18 +176,15 @@ describe('applyGlobalAmService', () => {
 
     it('should return merged config in success response', async () => {
       server.use(
-        http.put(
-          'https://*/am/json/global-config/services/:serviceName/configuration',
-          async ({ params, request }) => {
-            const body = (await request.json()) as Record<string, any>;
-            return HttpResponse.json({
-              _id: params.serviceName,
-              enabled: false,
-              existingField: 'preserved-value',
-              ...body
-            });
-          }
-        )
+        http.put('https://*/am/json/global-config/services/:serviceName/configuration', async ({ params, request }) => {
+          const body = (await request.json()) as Record<string, any>;
+          return HttpResponse.json({
+            _id: params.serviceName,
+            enabled: false,
+            existingField: 'preserved-value',
+            ...body
+          });
+        })
       );
 
       const result = await applyGlobalAmServiceTool.toolFunction({
@@ -184,12 +221,9 @@ describe('applyGlobalAmService', () => {
   describe('Error Handling', () => {
     it('should surface GET error when global service is not found (404)', async () => {
       server.use(
-        http.get(
-          'https://*/am/json/global-config/services/:serviceName/configuration',
-          () => {
-            return new HttpResponse(JSON.stringify({ error: 'not found' }), { status: 404 });
-          }
-        )
+        http.get('https://*/am/json/global-config/services/:serviceName/configuration', () => {
+          return new HttpResponse(JSON.stringify({ error: 'not found' }), { status: 404 });
+        })
       );
 
       const result = await applyGlobalAmServiceTool.toolFunction({
@@ -203,12 +237,9 @@ describe('applyGlobalAmService', () => {
 
     it('should surface PUT error when service update fails', async () => {
       server.use(
-        http.put(
-          'https://*/am/json/global-config/services/:serviceName/configuration',
-          () => {
-            return new HttpResponse(JSON.stringify({ error: 'bad request' }), { status: 400 });
-          }
-        )
+        http.put('https://*/am/json/global-config/services/:serviceName/configuration', () => {
+          return new HttpResponse(JSON.stringify({ error: 'bad request' }), { status: 400 });
+        })
       );
 
       const result = await applyGlobalAmServiceTool.toolFunction({
@@ -221,12 +252,9 @@ describe('applyGlobalAmService', () => {
 
     it('should surface 403 GET error', async () => {
       server.use(
-        http.get(
-          'https://*/am/json/global-config/services/:serviceName/configuration',
-          () => {
-            return new HttpResponse(JSON.stringify({ error: 'forbidden' }), { status: 403 });
-          }
-        )
+        http.get('https://*/am/json/global-config/services/:serviceName/configuration', () => {
+          return new HttpResponse(JSON.stringify({ error: 'forbidden' }), { status: 403 });
+        })
       );
 
       const result = await applyGlobalAmServiceTool.toolFunction({

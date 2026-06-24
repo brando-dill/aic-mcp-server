@@ -116,7 +116,11 @@ describe('deleteSamlEntity', () => {
         })
       );
 
-      const result = await deleteSamlEntityTool.toolFunction({ realm: 'alpha', location: 'hosted', entityId64: 'nonexistent' });
+      const result = await deleteSamlEntityTool.toolFunction({
+        realm: 'alpha',
+        location: 'hosted',
+        entityId64: 'nonexistent'
+      });
 
       expect(result.content[0].text).toContain('Failed to delete SAML entity');
       expect(result.content[0].text).toContain('nonexistent');

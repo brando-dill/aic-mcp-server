@@ -65,9 +65,7 @@ export const applyAmServiceTool = {
 
       return createToolResponse(formatSuccess(data, response));
     } catch (error: any) {
-      return createToolResponse(
-        `Failed to apply AM service "${serviceType}" for realm "${realm}": ${error.message}`
-      );
+      return createToolResponse(`Failed to apply AM service "${serviceType}" for realm "${realm}": ${error.message}`);
     }
   }
 };

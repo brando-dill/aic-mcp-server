@@ -36,9 +36,7 @@ export const deleteAmServiceTool = {
         `AM service "${serviceType}" deleted successfully from realm "${realm}".\nTransaction ID: ${transactionId}`
       );
     } catch (error: any) {
-      return createToolResponse(
-        `Failed to delete AM service "${serviceType}" for realm "${realm}": ${error.message}`
-      );
+      return createToolResponse(`Failed to delete AM service "${serviceType}" for realm "${realm}": ${error.message}`);
     }
   }
 };

@@ -29,7 +29,9 @@ export const updateSamlEntityTool = {
     realm: z.enum(REALMS).describe('The realm containing the entity (alpha or bravo)'),
     location: z.enum(SAML_LOCATIONS).describe('Whether the entity is hosted or remote'),
     entityId64: safePathSegmentSchema.describe('The base64-encoded entity ID of the SAML entity to update'),
-    entityConfig: z.record(z.any()).describe('Partial or full entity configuration fields to merge into the existing entity')
+    entityConfig: z
+      .record(z.any())
+      .describe('Partial or full entity configuration fields to merge into the existing entity')
   },
   async toolFunction({
     realm,

@@ -26,7 +26,9 @@ export const createSamlRemoteEntityTool = {
     standardMetadata: z
       .string()
       .optional()
-      .describe('Standard SAML metadata XML string to import. Takes precedence over entityConfig if both are supplied.'),
+      .describe(
+        'Standard SAML metadata XML string to import. Takes precedence over entityConfig if both are supplied.'
+      ),
     entityConfig: z
       .record(z.any())
       .optional()

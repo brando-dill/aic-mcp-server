@@ -134,12 +134,9 @@ describe('setSocialProvider', () => {
       { status: 401, desc: '401 Unauthorized' }
     ])('should handle $desc', async ({ status }) => {
       server.use(
-        http.put(
-          'https://*/am/json/*/realm-config/services/SocialIdentityProviders/:providerType/:providerId',
-          () => {
-            return new HttpResponse(JSON.stringify({ error: 'error' }), { status });
-          }
-        )
+        http.put('https://*/am/json/*/realm-config/services/SocialIdentityProviders/:providerType/:providerId', () => {
+          return new HttpResponse(JSON.stringify({ error: 'error' }), { status });
+        })
       );
 
       const result = await setSocialProviderTool.toolFunction({
