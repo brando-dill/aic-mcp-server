@@ -1,0 +1,66 @@
+{
+  "name": "listAmServiceSubconfigs",
+  "title": "List AM Service Sub-Configurations",
+  "description": "List all sub-configuration instances under a given AM service in a realm. Returns all sub-config instances by GETting the service with _queryFilter=true. Useful for discovering existing sub-configs before creating or updating them. Uses accept-api-version: protocol=2.1,resource=1.0.",
+  "scopes": [
+    "fr:am:*"
+  ],
+  "inputSchema": {
+    "realm": {
+      "_def": {
+        "values": [
+          "alpha",
+          "bravo"
+        ],
+        "typeName": "ZodEnum",
+        "description": "The realm containing the service (alpha or bravo)"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "serviceType": {
+      "_def": {
+        "schema": {
+          "_def": {
+            "schema": {
+              "_def": {
+                "checks": [
+                  {
+                    "kind": "min",
+                    "value": 1,
+                    "message": "Value cannot be empty"
+                  }
+                ],
+                "typeName": "ZodString",
+                "coerce": false
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "typeName": "ZodEffects",
+            "effect": {
+              "type": "refinement"
+            }
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodEffects",
+        "effect": {
+          "type": "refinement"
+        },
+        "description": "The service type identifier (e.g., \"SocialIdentityProviders\", \"validation\")"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}

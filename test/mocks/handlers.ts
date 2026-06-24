@@ -629,6 +629,58 @@ export const handlers = [
     return HttpResponse.json({ result: [], resultCount: 0 });
   }),
 
+  // AM - Services - sub-config: list all instances (GET with _queryFilter)
+  http.get('https://*/am/json/*/services/:serviceType/:subType', ({ params, request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    return HttpResponse.json({
+      result: [
+        {
+          _id: `${String(params.subType)}-instance-1`,
+          _type: { _id: params.subType, name: String(params.subType) }
+        }
+      ],
+      resultCount: 1,
+      pagedResultsCookie: null,
+      totalPagedResultsPolicy: 'NONE',
+      totalPagedResults: -1,
+      remainingPagedResults: -1
+    });
+  }),
+
+  // AM - Services - sub-config: get single instance (GET by serviceType/subType/id)
+  http.get('https://*/am/json/*/services/:serviceType/:subType/:id', ({ params, request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    return HttpResponse.json({
+      _id: params.id,
+      _rev: 'rev-subconfig-123',
+      _type: { _id: params.subType, name: String(params.subType) }
+    });
+  }),
+
+  // AM - Services - sub-config: upsert instance (PUT by serviceType/subType/id)
+  http.put('https://*/am/json/*/services/:serviceType/:subType/:id', async ({ params, request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    const body = (await request.json()) as Record<string, any>;
+    return HttpResponse.json({ _id: params.id, ...body });
+  }),
+
+  // AM - Services - sub-config: delete instance (DELETE by serviceType/subType/id)
+  http.delete('https://*/am/json/*/services/:serviceType/:subType/:id', ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    return new HttpResponse(null, {
+      status: 204,
+      headers: { 'x-forgerock-transactionid': 'mock-tx-id-subconfig-delete' }
+    });
+  }),
+
   // AM - Services - get single service config (GET by serviceType)
   http.get('https://*/am/json/*/services/:serviceType', ({ params, request }) => {
     const authError = validateAuthHeader(request);
@@ -757,7 +809,14 @@ export const handlers = [
       entityId: `https://example.com/saml/${params.entityId64}`,
       location: params.location,
       roles: ['SPSSODescriptor'],
-      assertionConsumerService: [{ index: 0, isDefault: true, binding: 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST', location: 'https://example.com/acs' }]
+      assertionConsumerService: [
+        {
+          index: 0,
+          isDefault: true,
+          binding: 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+          location: 'https://example.com/acs'
+        }
+      ]
     });
   }),
 

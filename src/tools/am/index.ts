@@ -38,3 +38,7 @@ export { createSamlRemoteEntityTool } from './createSamlRemoteEntity.js';
 export { updateSamlEntityTool } from './updateSamlEntity.js';
 export { deleteSamlEntityTool } from './deleteSamlEntity.js';
 export { applyGlobalAmServiceTool } from './applyGlobalAmService.js';
+export { listAmServiceSubconfigsTool } from './listAmServiceSubconfigs.js';
+export { getAmServiceSubconfigTool } from './getAmServiceSubconfig.js';
+export { applyAmServiceSubconfigTool } from './applyAmServiceSubconfig.js';
+export { deleteAmServiceSubconfigTool } from './deleteAmServiceSubconfig.js';

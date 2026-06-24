@@ -1,0 +1,150 @@
+{
+  "name": "deleteAmServiceSubconfig",
+  "title": "Delete AM Service Sub-Configuration",
+  "description": "Delete a specific sub-configuration instance from an AM service in a realm. Warning: this is a permanent deletion and cannot be undone. Uses accept-api-version: protocol=2.1,resource=1.0.",
+  "scopes": [
+    "fr:am:*"
+  ],
+  "inputSchema": {
+    "realm": {
+      "_def": {
+        "values": [
+          "alpha",
+          "bravo"
+        ],
+        "typeName": "ZodEnum",
+        "description": "The realm containing the service (alpha or bravo)"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "serviceType": {
+      "_def": {
+        "schema": {
+          "_def": {
+            "schema": {
+              "_def": {
+                "checks": [
+                  {
+                    "kind": "min",
+                    "value": 1,
+                    "message": "Value cannot be empty"
+                  }
+                ],
+                "typeName": "ZodString",
+                "coerce": false
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "typeName": "ZodEffects",
+            "effect": {
+              "type": "refinement"
+            }
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodEffects",
+        "effect": {
+          "type": "refinement"
+        },
+        "description": "The service type identifier (e.g., \"SocialIdentityProviders\", \"validation\")"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "subType": {
+      "_def": {
+        "schema": {
+          "_def": {
+            "schema": {
+              "_def": {
+                "checks": [
+                  {
+                    "kind": "min",
+                    "value": 1,
+                    "message": "Value cannot be empty"
+                  }
+                ],
+                "typeName": "ZodString",
+                "coerce": false
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "typeName": "ZodEffects",
+            "effect": {
+              "type": "refinement"
+            }
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodEffects",
+        "effect": {
+          "type": "refinement"
+        },
+        "description": "The sub-type identifier within the service (e.g., \"google\" within SocialIdentityProviders)"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "id": {
+      "_def": {
+        "schema": {
+          "_def": {
+            "schema": {
+              "_def": {
+                "checks": [
+                  {
+                    "kind": "min",
+                    "value": 1,
+                    "message": "Value cannot be empty"
+                  }
+                ],
+                "typeName": "ZodString",
+                "coerce": false
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "typeName": "ZodEffects",
+            "effect": {
+              "type": "refinement"
+            }
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodEffects",
+        "effect": {
+          "type": "refinement"
+        },
+        "description": "The specific sub-configuration instance ID to delete (e.g., \"my-google-provider\")"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}

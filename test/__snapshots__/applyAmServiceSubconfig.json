@@ -1,0 +1,181 @@
+{
+  "name": "applyAmServiceSubconfig",
+  "title": "Apply AM Service Sub-Configuration",
+  "description": "Apply configuration changes to an AM service sub-config instance using a read-merge-write pattern. Fetches the current sub-config, strips _rev, spreads caller-supplied subconfig fields on top, and PUTs the merged payload back. If the sub-config does not exist (404 on GET), performs a direct PUT with the supplied subconfig as a create. This differs from applyAmService — a missing sub-config triggers creation rather than an error. Fields not supplied in subconfig are preserved from the existing configuration on update.",
+  "scopes": [
+    "fr:am:*"
+  ],
+  "inputSchema": {
+    "realm": {
+      "_def": {
+        "values": [
+          "alpha",
+          "bravo"
+        ],
+        "typeName": "ZodEnum",
+        "description": "The realm containing the service (alpha or bravo)"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "serviceType": {
+      "_def": {
+        "schema": {
+          "_def": {
+            "schema": {
+              "_def": {
+                "checks": [
+                  {
+                    "kind": "min",
+                    "value": 1,
+                    "message": "Value cannot be empty"
+                  }
+                ],
+                "typeName": "ZodString",
+                "coerce": false
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "typeName": "ZodEffects",
+            "effect": {
+              "type": "refinement"
+            }
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodEffects",
+        "effect": {
+          "type": "refinement"
+        },
+        "description": "The service type identifier (e.g., \"SocialIdentityProviders\", \"validation\")"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "subType": {
+      "_def": {
+        "schema": {
+          "_def": {
+            "schema": {
+              "_def": {
+                "checks": [
+                  {
+                    "kind": "min",
+                    "value": 1,
+                    "message": "Value cannot be empty"
+                  }
+                ],
+                "typeName": "ZodString",
+                "coerce": false
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "typeName": "ZodEffects",
+            "effect": {
+              "type": "refinement"
+            }
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodEffects",
+        "effect": {
+          "type": "refinement"
+        },
+        "description": "The sub-type identifier within the service (e.g., \"google\" within SocialIdentityProviders)"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "id": {
+      "_def": {
+        "schema": {
+          "_def": {
+            "schema": {
+              "_def": {
+                "checks": [
+                  {
+                    "kind": "min",
+                    "value": 1,
+                    "message": "Value cannot be empty"
+                  }
+                ],
+                "typeName": "ZodString",
+                "coerce": false
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "typeName": "ZodEffects",
+            "effect": {
+              "type": "refinement"
+            }
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodEffects",
+        "effect": {
+          "type": "refinement"
+        },
+        "description": "The specific sub-configuration instance ID (e.g., \"my-google-provider\")"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "subconfig": {
+      "_def": {
+        "keyType": {
+          "_def": {
+            "checks": [],
+            "typeName": "ZodString",
+            "coerce": false
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "valueType": {
+          "_def": {
+            "typeName": "ZodAny"
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          },
+          "_any": true
+        },
+        "typeName": "ZodRecord",
+        "description": "Partial or full sub-configuration fields to merge into the existing sub-config. For creates (404 on GET), the full desired config must be supplied."
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}
