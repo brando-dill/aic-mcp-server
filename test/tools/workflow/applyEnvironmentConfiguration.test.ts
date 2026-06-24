@@ -114,6 +114,76 @@ describe('applyEnvironmentConfiguration', () => {
       expect(putBody.domains).toContain('new.example.com');
     });
 
+    it('cookieDomains: GET then PUT with union of domains', async () => {
+      await applyEnvironmentConfigurationTool.toolFunction({
+        cookieDomains: { domains: ['new-cookie.example.com'] }
+      });
+
+      const calls = getSpy().mock.calls;
+      expect(calls).toHaveLength(2);
+
+      expect(calls[0][2]?.method).toBe('GET');
+      expect(calls[0][0]).toBe('https://test.forgeblocks.com/environment/cookie-domains');
+
+      expect(calls[1][2]?.method).toBe('PUT');
+      expect(calls[1][0]).toBe('https://test.forgeblocks.com/environment/cookie-domains');
+
+      const putBody = JSON.parse(calls[1][2]?.body as string);
+      expect(putBody.domains).toContain('new-cookie.example.com');
+    });
+
+    it('certificate create: POST to /environment/certificates with active, certificate, privateKey', async () => {
+      await applyEnvironmentConfigurationTool.toolFunction({
+        certificate: {
+          active: true,
+          certificate: '-----BEGIN CERTIFICATE-----\nMIIB...\n-----END CERTIFICATE-----',
+          privateKey: '-----BEGIN PRIVATE KEY-----\nMIIE...\n-----END PRIVATE KEY-----'
+        }
+      });
+
+      const calls = getSpy().mock.calls;
+      expect(calls).toHaveLength(1);
+      expect(calls[0][2]?.method).toBe('POST');
+      expect(calls[0][0]).toBe('https://test.forgeblocks.com/environment/certificates');
+
+      const body = JSON.parse(calls[0][2]?.body as string);
+      expect(body.active).toBe(true);
+      expect(body.certificate).toBeDefined();
+      expect(body.privateKey).toBeDefined();
+    });
+
+    it('certificate update: PATCH to /environment/certificates/{id} with active flag', async () => {
+      await applyEnvironmentConfigurationTool.toolFunction({
+        certificate: { certificateId: 'cert-abc123', active: false }
+      });
+
+      const calls = getSpy().mock.calls;
+      expect(calls).toHaveLength(1);
+      expect(calls[0][2]?.method).toBe('PATCH');
+      expect(calls[0][0]).toBe('https://test.forgeblocks.com/environment/certificates/cert-abc123');
+
+      const body = JSON.parse(calls[0][2]?.body as string);
+      expect(body.active).toBe(false);
+    });
+
+    it('ssoCookieConfig: GET then PUT with merged fields', async () => {
+      await applyEnvironmentConfigurationTool.toolFunction({
+        ssoCookieConfig: { cookieName: 'iPlanetDirectoryPro' }
+      });
+
+      const calls = getSpy().mock.calls;
+      expect(calls).toHaveLength(2);
+
+      expect(calls[0][2]?.method).toBe('GET');
+      expect(calls[0][0]).toBe('https://test.forgeblocks.com/environment/sso-cookie');
+
+      expect(calls[1][2]?.method).toBe('PUT');
+      expect(calls[1][0]).toBe('https://test.forgeblocks.com/environment/sso-cookie');
+
+      const putBody = JSON.parse(calls[1][2]?.body as string);
+      expect(putBody.cookieName).toBe('iPlanetDirectoryPro');
+    });
+
     it('globalAmService: GET then PUT with merged config (strips _rev)', async () => {
       await applyEnvironmentConfigurationTool.toolFunction({
         globalAmService: {
@@ -174,6 +244,33 @@ describe('applyEnvironmentConfiguration', () => {
       expect(parsed.results.customDomains.success).toBe(true);
     });
 
+    it('returns results map with cookieDomains.success true on success', async () => {
+      const result = await applyEnvironmentConfigurationTool.toolFunction({
+        cookieDomains: { domains: ['cookie.example.com'] }
+      });
+
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed.results.cookieDomains.success).toBe(true);
+    });
+
+    it('returns results map with certificate.success true on create', async () => {
+      const result = await applyEnvironmentConfigurationTool.toolFunction({
+        certificate: { active: true, certificate: '-----BEGIN CERTIFICATE-----', privateKey: '-----BEGIN PRIVATE KEY-----' }
+      });
+
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed.results.certificate.success).toBe(true);
+    });
+
+    it('returns results map with ssoCookieConfig.success true on success', async () => {
+      const result = await applyEnvironmentConfigurationTool.toolFunction({
+        ssoCookieConfig: { cookieName: 'iPlanetDirectoryPro' }
+      });
+
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed.results.ssoCookieConfig.success).toBe(true);
+    });
+
     it('returns results map with globalAmService.success true on success', async () => {
       const result = await applyEnvironmentConfigurationTool.toolFunction({
         globalAmService: { serviceName: 'OAuth2Provider', serviceConfig: { foo: 'bar' } }
@@ -181,6 +278,27 @@ describe('applyEnvironmentConfiguration', () => {
 
       const parsed = JSON.parse(result.content[0].text);
       expect(parsed.results.globalAmService.success).toBe(true);
+    });
+
+    it('all 7 targets in one call: all result keys present', async () => {
+      const result = await applyEnvironmentConfigurationTool.toolFunction({
+        esvSecret: { secretId: 'esv-s1', valueBase64: 'dGVzdA==' },
+        esvVariable: { variableId: 'esv-v1', value: 'val' },
+        customDomains: { realm: 'alpha', domains: ['d.example.com'] },
+        cookieDomains: { domains: ['c.example.com'] },
+        certificate: { active: true },
+        ssoCookieConfig: { cookieName: 'testCookie' },
+        globalAmService: { serviceName: 'OAuth2Provider', serviceConfig: {} }
+      });
+
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed.results.esvSecret).toBeDefined();
+      expect(parsed.results.esvVariable).toBeDefined();
+      expect(parsed.results.customDomains).toBeDefined();
+      expect(parsed.results.cookieDomains).toBeDefined();
+      expect(parsed.results.certificate).toBeDefined();
+      expect(parsed.results.ssoCookieConfig).toBeDefined();
+      expect(parsed.results.globalAmService).toBeDefined();
     });
   });
 
@@ -215,6 +333,16 @@ describe('applyEnvironmentConfiguration', () => {
     it('all targets are optional (passing empty object causes guard message)', async () => {
       const result = await applyEnvironmentConfigurationTool.toolFunction({});
       expect(result.content[0].text).toContain('No configuration targets supplied');
+    });
+
+    it('certificate.certificateId: rejects path traversal', () => {
+      const schema = applyEnvironmentConfigurationTool.inputSchema.certificate;
+      expect(() => schema!.parse({ certificateId: '../etc/passwd', active: true })).toThrow();
+    });
+
+    it('globalAmService.serviceName: rejects path traversal', () => {
+      const schema = applyEnvironmentConfigurationTool.inputSchema.globalAmService;
+      expect(() => schema!.parse({ serviceName: '../etc/passwd', serviceConfig: {} })).toThrow();
     });
   });
 
@@ -284,6 +412,42 @@ describe('applyEnvironmentConfiguration', () => {
       const parsed = JSON.parse(result.content[0].text);
       expect(parsed.results.globalAmService.success).toBe(false);
       expect(parsed.results.globalAmService.error).toBeDefined();
+    });
+
+    it('ssoCookieConfig: error captured when GET fails, other targets not affected', async () => {
+      server.use(
+        http.get('https://*/environment/sso-cookie', () => {
+          return new HttpResponse(JSON.stringify({ error: 'forbidden' }), { status: 403 });
+        })
+      );
+
+      const result = await applyEnvironmentConfigurationTool.toolFunction({
+        ssoCookieConfig: { cookieName: 'test' },
+        esvVariable: { variableId: 'esv-v1', value: 'val' }
+      });
+
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed.results.ssoCookieConfig.success).toBe(false);
+      expect(parsed.results.ssoCookieConfig.error).toBeDefined();
+      expect(parsed.results.esvVariable.success).toBe(true);
+    });
+
+    it('certificate: error captured when POST fails, other targets not affected', async () => {
+      server.use(
+        http.post('https://*/environment/certificates', () => {
+          return new HttpResponse(JSON.stringify({ error: 'bad request' }), { status: 400 });
+        })
+      );
+
+      const result = await applyEnvironmentConfigurationTool.toolFunction({
+        certificate: { active: true },
+        esvVariable: { variableId: 'esv-v1', value: 'val' }
+      });
+
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed.results.certificate.success).toBe(false);
+      expect(parsed.results.certificate.error).toBeDefined();
+      expect(parsed.results.esvVariable.success).toBe(true);
     });
 
     it('partial success: customDomains fails, cookieDomains succeeds', async () => {

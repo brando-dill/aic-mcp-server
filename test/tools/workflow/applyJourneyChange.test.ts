@@ -82,7 +82,7 @@ describe('applyJourneyChange', () => {
         description: 'test'
       });
 
-      const parsed = JSON.parse(result.content[0].text);
+      const parsed = JSON.parse(result.content[0].text.split('\n\nTransaction ID:')[0]);
       expect(parsed.success).toBe(true);
       expect(parsed.journeyName).toBe('Login');
     });
@@ -102,7 +102,7 @@ describe('applyJourneyChange', () => {
         }
       });
 
-      const parsed = JSON.parse(result.content[0].text);
+      const parsed = JSON.parse(result.content[0].text.split('\n\nTransaction ID:')[0]);
       expect(parsed.nodeIdMapping).toBeDefined();
       expect(parsed.nodeIdMapping['username-node']).toBeDefined();
     });
@@ -114,7 +114,7 @@ describe('applyJourneyChange', () => {
         enabled: false
       });
 
-      const parsed = JSON.parse(result.content[0].text);
+      const parsed = JSON.parse(result.content[0].text.split('\n\nTransaction ID:')[0]);
       expect(parsed.nodeIdMapping).toBeUndefined();
     });
   });

@@ -59,7 +59,7 @@ export const readAuditLogsTool = {
     }
 
     if (eventTypes && eventTypes.length > 0) {
-      const eventConditions = eventTypes.map((e) => `payload/eventName eq "${e}"`).join(' or ');
+      const eventConditions = eventTypes.map((e) => `/payload/eventName eq "${e}"`).join(' or ');
       filterParts.push(`(${eventConditions})`);
     }
 
@@ -70,9 +70,8 @@ export const readAuditLogsTool = {
     url.searchParams.append('source', logSources.join(','));
     url.searchParams.append('_queryFilter', queryFilter);
 
-    if (pageSize !== undefined) {
-      url.searchParams.append('_pageSize', pageSize.toString());
-    }
+    const effectivePageSize = pageSize ?? 20;
+    url.searchParams.append('_pageSize', effectivePageSize.toString());
 
     if (timeWindow?.beginTime) {
       url.searchParams.append('beginTime', timeWindow.beginTime);
@@ -83,7 +82,7 @@ export const readAuditLogsTool = {
     }
 
     if (pagedResultsCookie) {
-      url.searchParams.append('pagedResultsCookie', pagedResultsCookie);
+      url.searchParams.append('_pagedResultsCookie', pagedResultsCookie);
     }
 
     let logsData: MonitoringLogsApiResponse;

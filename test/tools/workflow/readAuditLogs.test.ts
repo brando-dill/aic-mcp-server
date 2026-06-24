@@ -55,8 +55,8 @@ describe('readAuditLogs', () => {
       const [url] = getSpy().mock.calls[0];
       // URLSearchParams encodes spaces as '+'; replace before decoding
       const decoded = decodeURIComponent(url.replace(/\+/g, ' '));
-      expect(decoded).toContain('payload/eventName eq "AM-LOGIN-COMPLETED"');
-      expect(decoded).toContain('payload/eventName eq "AM-LOGIN-FAILED"');
+      expect(decoded).toContain('/payload/eventName eq "AM-LOGIN-COMPLETED"');
+      expect(decoded).toContain('/payload/eventName eq "AM-LOGIN-FAILED"');
       expect(decoded).toContain(' or ');
     });
 
@@ -72,7 +72,7 @@ describe('readAuditLogs', () => {
       const decoded = decodeURIComponent(url.replace(/\+/g, ' '));
       expect(decoded).toContain('/payload/principal eq "user123"');
       expect(decoded).toContain(' and ');
-      expect(decoded).toContain('payload/eventName eq "AM-LOGIN-COMPLETED"');
+      expect(decoded).toContain('/payload/eventName eq "AM-LOGIN-COMPLETED"');
     });
 
     it('should append _pageSize when pageSize is supplied', async () => {
@@ -82,14 +82,21 @@ describe('readAuditLogs', () => {
       expect(url).toContain('_pageSize=50');
     });
 
-    it('should append pagedResultsCookie when supplied', async () => {
+    it('should append default _pageSize=20 when pageSize is omitted', async () => {
+      await readAuditLogsTool.toolFunction({ logSources: ['am-core'] });
+
+      const [url] = getSpy().mock.calls[0];
+      expect(url).toContain('_pageSize=20');
+    });
+
+    it('should append _pagedResultsCookie when supplied', async () => {
       await readAuditLogsTool.toolFunction({
         logSources: ['am-core'],
         pagedResultsCookie: 'cookie-abc123'
       });
 
       const [url] = getSpy().mock.calls[0];
-      expect(url).toContain('pagedResultsCookie=cookie-abc123');
+      expect(url).toContain('_pagedResultsCookie=cookie-abc123');
     });
 
     it('should append beginTime and endTime from timeWindow when supplied', async () => {
@@ -235,6 +242,21 @@ describe('readAuditLogs', () => {
       const schema = readAuditLogsTool.inputSchema.eventTypes!;
       expect(() => schema.parse(undefined)).not.toThrow();
       expect(() => schema.parse(['AM-LOGIN-COMPLETED'])).not.toThrow();
+    });
+
+    it('should pass userId through to query filter as-is (no schema sanitization)', async () => {
+      // userId is user-supplied data that appears in the _queryFilter; the API owns validation
+      await readAuditLogsTool.toolFunction({ logSources: ['am-core'], userId: 'user-abc' });
+      const [url] = getSpy().mock.calls[0];
+      const decoded = decodeURIComponent(url.replace(/\+/g, ' '));
+      expect(decoded).toContain('/payload/principal eq "user-abc"');
+    });
+
+    it('should pass eventType entries through to query filter as-is', async () => {
+      await readAuditLogsTool.toolFunction({ logSources: ['am-core'], eventTypes: ['MY-EVENT'] });
+      const [url] = getSpy().mock.calls[0];
+      const decoded = decodeURIComponent(url.replace(/\+/g, ' '));
+      expect(decoded).toContain('/payload/eventName eq "MY-EVENT"');
     });
   });
 

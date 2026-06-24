@@ -66,22 +66,25 @@ export const deleteApplicationConfigurationTool = {
       const managedApp = idmResults[0];
       const oidcId = managedApp.ssoEntities?.oidcId;
       const deleted: string[] = [];
+      let lastResponse: Response;
 
       // Step 3: Delete the IDM managed application
-      await makeAuthenticatedRequest(
+      const { response: idmDeleteResponse } = await makeAuthenticatedRequest(
         `https://${aicBaseUrl}/openidm/managed/${realm}_application/${managedApp._id}`,
         SCOPES,
         { method: 'DELETE' }
       );
+      lastResponse = idmDeleteResponse;
       deleted.push(`IDM managed application (${managedApp._id})`);
 
       // Step 4: Delete the AM OAuth2Client if the app had an oidcId
       if (oidcId) {
         const amOidcUrl = buildAMRealmUrl(realm, `realm-config/agents/OAuth2Client/${encodeURIComponent(oidcId)}`);
-        await makeAuthenticatedRequest(amOidcUrl, SCOPES, {
+        const { response: oidcDeleteResponse } = await makeAuthenticatedRequest(amOidcUrl, SCOPES, {
           method: 'DELETE',
           headers: AM_API_HEADERS
         });
+        lastResponse = oidcDeleteResponse;
         deleted.push(`AM OAuth2Client (${oidcId})`);
       }
 
@@ -96,14 +99,11 @@ export const deleteApplicationConfigurationTool = {
           method: 'DELETE',
           headers: SAML_API_HEADERS
         });
+        lastResponse = samlResponse;
         deleted.push(`AM SAML entity (${samlEntityId})`);
-
-        return createToolResponse(formatSuccess({ deleted }, samlResponse));
       }
 
-      // If no SAML deletion, return success with what was deleted
-      // Use a minimal response object since DELETE returns 204
-      return createToolResponse(formatSuccess({ deleted }, new Response(null, { status: 204 })));
+      return createToolResponse(formatSuccess({ deleted }, lastResponse!));
     } catch (error: any) {
       return createToolResponse(`Failed to delete application configuration: ${error.message}`);
     }

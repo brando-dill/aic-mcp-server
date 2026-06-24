@@ -33,7 +33,7 @@ export const deleteJourneyConfigurationTool = {
       });
       deleted.push(journeyName);
     } catch (error: any) {
-      errors.push(`journey "${journeyName}": ${error.message}`);
+      errors.push(`journey:${journeyName}: ${error.message}`);
     }
 
     // Step 2: DELETE each script (failures do not abort)
@@ -47,7 +47,7 @@ export const deleteJourneyConfigurationTool = {
           });
           deleted.push(`script:${scriptId}`);
         } catch (error: any) {
-          errors.push(`script "${scriptId}": ${error.message}`);
+          errors.push(`script:${scriptId}: ${error.message}`);
         }
       }
     }

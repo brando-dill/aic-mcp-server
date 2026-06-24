@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { makeAuthenticatedRequest, createToolResponse } from '../../utils/apiHelpers.js';
+import { formatSuccess } from '../../utils/responseHelpers.js';
 import { REALMS, safePathSegmentSchema } from '../../utils/validationHelpers.js';
 import {
   buildAMJourneyUrl,
@@ -157,7 +158,7 @@ export const applyJourneyChangeTool = {
       }
 
       // Step 3: PUT merged payload
-      await makeAuthenticatedRequest(url, SCOPES, {
+      const { response } = await makeAuthenticatedRequest(url, SCOPES, {
         method: 'PUT',
         headers: AM_API_HEADERS,
         body: JSON.stringify(payload)
@@ -168,7 +169,7 @@ export const applyJourneyChangeTool = {
         result.nodeIdMapping = idMapping;
       }
 
-      return createToolResponse(JSON.stringify(result, null, 2));
+      return createToolResponse(formatSuccess(result, response));
     } catch (error: any) {
       return createToolResponse(`Failed to update journey "${journeyName}": ${error.message}`);
     }

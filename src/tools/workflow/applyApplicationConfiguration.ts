@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { makeAuthenticatedRequest, createToolResponse } from '../../utils/apiHelpers.js';
-import { REALMS } from '../../utils/validationHelpers.js';
+import { formatSuccess } from '../../utils/responseHelpers.js';
+import { REALMS, safePathSegmentSchema } from '../../utils/validationHelpers.js';
 import { buildAMRealmUrl, AM_API_HEADERS, AM_OAUTH2_CLIENT_HEADERS } from '../../utils/amHelpers.js';
 
 const aicBaseUrl = process.env.AIC_BASE_URL;
@@ -45,7 +46,7 @@ export const applyApplicationConfigurationTool = {
   },
   inputSchema: {
     realm: z.enum(REALMS),
-    applicationName: z.string().describe('Application name'),
+    applicationName: safePathSegmentSchema.describe('Application name'),
     clientType: z.enum(['oidc', 'saml']),
     oauth2Client: z.record(z.any()).optional().describe('AM OAuth2Client config fields (for OIDC)'),
     samlEntityId: z.string().optional().describe('SAML entity ID (required for SAML path)'),
@@ -121,23 +122,17 @@ async function applyOidcConfiguration(
       idmPayload.owners = owners.map((id) => ({ _ref: `managed/${realm}_user/${id}` }));
     }
 
-    await makeAuthenticatedRequest(`https://${aicBaseUrl}/openidm/managed/${realm}_application`, SCOPES, {
-      method: 'POST',
-      body: JSON.stringify(idmPayload)
-    });
+    const { response: createResponse } = await makeAuthenticatedRequest(
+      `https://${aicBaseUrl}/openidm/managed/${realm}_application`,
+      SCOPES,
+      {
+        method: 'POST',
+        body: JSON.stringify(idmPayload)
+      }
+    );
 
     return createToolResponse(
-      JSON.stringify(
-        {
-          applicationName,
-          clientType: 'oidc',
-          realm,
-          created: true,
-          oidcClientId: applicationName
-        },
-        null,
-        2
-      )
+      formatSuccess({ applicationName, clientType: 'oidc', realm, created: true, oidcClientId: applicationName }, createResponse)
     );
   } else {
     // Update path: GET AM OAuth2Client, merge, PUT; if owners supplied, PATCH IDM app
@@ -164,6 +159,7 @@ async function applyOidcConfiguration(
       });
     }
 
+    let lastOidcResponse: Response | undefined;
     if (owners?.length) {
       const patchOperations = [
         {
@@ -172,7 +168,7 @@ async function applyOidcConfiguration(
           value: owners.map((id) => ({ _ref: `managed/${realm}_user/${id}` }))
         }
       ];
-      await makeAuthenticatedRequest(
+      const { response: patchResponse } = await makeAuthenticatedRequest(
         `https://${aicBaseUrl}/openidm/managed/${realm}_application/${existingApp._id}`,
         SCOPES,
         {
@@ -180,20 +176,12 @@ async function applyOidcConfiguration(
           body: JSON.stringify(patchOperations)
         }
       );
+      lastOidcResponse = patchResponse;
     }
 
+    const updateResult = { applicationName, clientType: 'oidc', realm, created: false, oidcClientId: clientId };
     return createToolResponse(
-      JSON.stringify(
-        {
-          applicationName,
-          clientType: 'oidc',
-          realm,
-          created: false,
-          oidcClientId: clientId
-        },
-        null,
-        2
-      )
+      formatSuccess(updateResult, lastOidcResponse ?? new Response(null, { status: 200 }))
     );
   }
 }
@@ -230,58 +218,41 @@ async function applySamlConfiguration(
 
   if (!existingEntity) {
     // Create path
+    let createResponse: Response;
     if (location === 'hosted') {
       const createUrl = buildAMRealmUrl(realm, 'realm-config/saml2/hosted/?_action=create');
-      await makeAuthenticatedRequest(createUrl, SCOPES, {
+      const { response } = await makeAuthenticatedRequest(createUrl, SCOPES, {
         method: 'POST',
         headers: AM_API_HEADERS,
         body: JSON.stringify(samlEntityConfig || {})
       });
+      createResponse = response;
     } else {
       const importUrl = buildAMRealmUrl(realm, 'realm-config/saml2/remote/?_action=importEntity');
-      await makeAuthenticatedRequest(importUrl, SCOPES, {
+      const { response } = await makeAuthenticatedRequest(importUrl, SCOPES, {
         method: 'POST',
         headers: AM_API_HEADERS,
         body: JSON.stringify(samlEntityConfig || {})
       });
+      createResponse = response;
     }
 
     return createToolResponse(
-      JSON.stringify(
-        {
-          applicationName,
-          clientType: 'saml',
-          realm,
-          created: true,
-          samlEntityId
-        },
-        null,
-        2
-      )
+      formatSuccess({ applicationName, clientType: 'saml', realm, created: true, samlEntityId }, createResponse!)
     );
   } else {
     // Update path: strip _rev, merge, PUT back
     const entityToUpdate = { ...existingEntity, ...(samlEntityConfig || {}) };
     delete entityToUpdate._rev;
 
-    await makeAuthenticatedRequest(entityUrl, SCOPES, {
+    const { response: updateResponse } = await makeAuthenticatedRequest(entityUrl, SCOPES, {
       method: 'PUT',
       headers: SAML_API_HEADERS,
       body: JSON.stringify(entityToUpdate)
     });
 
     return createToolResponse(
-      JSON.stringify(
-        {
-          applicationName,
-          clientType: 'saml',
-          realm,
-          created: false,
-          samlEntityId
-        },
-        null,
-        2
-      )
+      formatSuccess({ applicationName, clientType: 'saml', realm, created: false, samlEntityId }, updateResponse)
     );
   }
 }

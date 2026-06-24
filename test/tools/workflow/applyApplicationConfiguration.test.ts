@@ -161,7 +161,7 @@ describe('applyApplicationConfiguration', () => {
         oauth2Client: {}
       });
 
-      const parsed = JSON.parse(result.content[0].text);
+      const parsed = JSON.parse(result.content[0].text.split('\n\nTransaction ID:')[0]);
       expect(parsed).toHaveProperty('applicationName', 'MyApp');
       expect(parsed).toHaveProperty('clientType', 'oidc');
       expect(parsed).toHaveProperty('realm', 'alpha');
@@ -182,7 +182,7 @@ describe('applyApplicationConfiguration', () => {
         oauth2Client: {}
       });
 
-      const parsed = JSON.parse(result.content[0].text);
+      const parsed = JSON.parse(result.content[0].text.split('\n\nTransaction ID:')[0]);
       expect(parsed).toHaveProperty('oidcClientId');
     });
 
@@ -202,7 +202,7 @@ describe('applyApplicationConfiguration', () => {
         samlEntityConfig: { entityId: SAML_ENTITY_ID }
       });
 
-      const parsed = JSON.parse(result.content[0].text);
+      const parsed = JSON.parse(result.content[0].text.split('\n\nTransaction ID:')[0]);
       expect(parsed).toHaveProperty('samlEntityId', SAML_ENTITY_ID);
     });
   });
@@ -223,7 +223,7 @@ describe('applyApplicationConfiguration', () => {
         oauth2Client: {}
       });
 
-      const parsed = JSON.parse(result.content[0].text);
+      const parsed = JSON.parse(result.content[0].text.split('\n\nTransaction ID:')[0]);
       expect(parsed.created).toBe(true);
 
       // Verify AM PUT and IDM POST were called
@@ -260,7 +260,7 @@ describe('applyApplicationConfiguration', () => {
         }
       });
 
-      const parsed = JSON.parse(result.content[0].text);
+      const parsed = JSON.parse(result.content[0].text.split('\n\nTransaction ID:')[0]);
       expect(parsed.created).toBe(false);
 
       const putCall = getSpy().mock.calls.find(
@@ -289,7 +289,7 @@ describe('applyApplicationConfiguration', () => {
         samlEntityConfig: { entityId: SAML_ENTITY_ID }
       });
 
-      const parsed = JSON.parse(result.content[0].text);
+      const parsed = JSON.parse(result.content[0].text.split('\n\nTransaction ID:')[0]);
       expect(parsed.created).toBe(true);
 
       const createCall = getSpy().mock.calls.find(
@@ -315,7 +315,7 @@ describe('applyApplicationConfiguration', () => {
         samlEntityConfig: { entityId: SAML_ENTITY_ID }
       });
 
-      const parsed = JSON.parse(result.content[0].text);
+      const parsed = JSON.parse(result.content[0].text.split('\n\nTransaction ID:')[0]);
       expect(parsed.created).toBe(true);
 
       const importCall = getSpy().mock.calls.find(
@@ -336,7 +336,7 @@ describe('applyApplicationConfiguration', () => {
         samlEntityConfig: { roles: ['IDPSSODescriptor'] }
       });
 
-      const parsed = JSON.parse(result.content[0].text);
+      const parsed = JSON.parse(result.content[0].text.split('\n\nTransaction ID:')[0]);
       expect(parsed.created).toBe(false);
 
       const putCall = getSpy().mock.calls.find(([url, , opts]) => url.includes('saml2') && opts?.method === 'PUT');
@@ -399,6 +399,11 @@ describe('applyApplicationConfiguration', () => {
 
   // ===== INPUT VALIDATION TESTS =====
   describe('Input Validation', () => {
+    it('should reject path traversal in applicationName', () => {
+      const schema = applyApplicationConfigurationTool.inputSchema.applicationName;
+      expect(() => schema.parse('../etc/passwd')).toThrow(/path traversal/);
+    });
+
     it('should accept only "oidc" or "saml" as clientType', () => {
       const schema = applyApplicationConfigurationTool.inputSchema.clientType;
       expect(() => schema.parse('oidc')).not.toThrow();
