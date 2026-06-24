@@ -1,0 +1,55 @@
+{
+  "name": "createSamlHostedEntity",
+  "title": "Create SAML 2.0 Hosted Entity",
+  "description": "Create a new hosted SAML 2.0 entity configuration in AM using the POST _action=create endpoint. A hosted entity is one where this AIC instance acts as the identity provider or service provider.",
+  "scopes": [
+    "fr:am:*"
+  ],
+  "inputSchema": {
+    "realm": {
+      "_def": {
+        "values": [
+          "alpha",
+          "bravo"
+        ],
+        "typeName": "ZodEnum",
+        "description": "The realm to create the entity in (alpha or bravo)"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "entityConfig": {
+      "_def": {
+        "keyType": {
+          "_def": {
+            "checks": [],
+            "typeName": "ZodString",
+            "coerce": false
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "valueType": {
+          "_def": {
+            "typeName": "ZodAny"
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          },
+          "_any": true
+        },
+        "typeName": "ZodRecord",
+        "description": "The full SAML 2.0 entity configuration object to create"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}

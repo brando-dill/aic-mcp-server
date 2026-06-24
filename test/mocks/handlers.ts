@@ -643,5 +643,58 @@ export const handlers = [
         headers: { 'x-forgerock-transactionid': 'mock-tx-id-delete' }
       });
     }
-  )
+  ),
+
+  // AM - SAML 2.0 - get single entity (GET by location and entityId64)
+  http.get('https://*/am/json/*/realm-config/saml2/:location/:entityId64', ({ params, request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    return HttpResponse.json({
+      _id: params.entityId64,
+      _rev: 'rev-abc123',
+      entityId: `https://example.com/saml/${params.entityId64}`,
+      location: params.location,
+      roles: ['SPSSODescriptor'],
+      assertionConsumerService: [{ index: 0, isDefault: true, binding: 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST', location: 'https://example.com/acs' }]
+    });
+  }),
+
+  // AM - SAML 2.0 - create hosted entity (POST _action=create)
+  http.post('https://*/am/json/*/realm-config/saml2/hosted/', async ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    const body = (await request.json()) as Record<string, any>;
+    return HttpResponse.json({ _id: body.entityId || 'new-hosted-entity', ...body }, { status: 201 });
+  }),
+
+  // AM - SAML 2.0 - create remote entity (POST _action=importEntity)
+  http.post('https://*/am/json/*/realm-config/saml2/remote/', async ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    const body = (await request.json()) as Record<string, any>;
+    return HttpResponse.json({ _id: 'imported-remote-entity', ...body }, { status: 201 });
+  }),
+
+  // AM - SAML 2.0 - update entity (PUT by location and entityId64)
+  http.put('https://*/am/json/*/realm-config/saml2/:location/:entityId64', async ({ params, request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    const body = (await request.json()) as Record<string, any>;
+    return HttpResponse.json({ _id: params.entityId64, ...body });
+  }),
+
+  // AM - SAML 2.0 - delete entity (DELETE by location and entityId64)
+  http.delete('https://*/am/json/*/realm-config/saml2/:location/:entityId64', ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    return new HttpResponse(null, {
+      status: 204,
+      headers: { 'x-forgerock-transactionid': 'mock-tx-id-saml-delete' }
+    });
+  })
 ];

@@ -1,0 +1,80 @@
+{
+  "name": "deleteSamlEntity",
+  "title": "Delete SAML 2.0 Entity",
+  "description": "Delete a SAML 2.0 entity configuration by its location (hosted or remote) and base64-encoded entity ID. Warning: this is a permanent deletion and cannot be undone. Any circle-of-trust memberships or federation partnerships that reference this entity must be updated separately.",
+  "scopes": [
+    "fr:am:*"
+  ],
+  "inputSchema": {
+    "realm": {
+      "_def": {
+        "values": [
+          "alpha",
+          "bravo"
+        ],
+        "typeName": "ZodEnum",
+        "description": "The realm containing the entity (alpha or bravo)"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "location": {
+      "_def": {
+        "values": [
+          "hosted",
+          "remote"
+        ],
+        "typeName": "ZodEnum",
+        "description": "Whether the entity is hosted or remote"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "entityId64": {
+      "_def": {
+        "schema": {
+          "_def": {
+            "schema": {
+              "_def": {
+                "checks": [
+                  {
+                    "kind": "min",
+                    "value": 1,
+                    "message": "Value cannot be empty"
+                  }
+                ],
+                "typeName": "ZodString",
+                "coerce": false
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "typeName": "ZodEffects",
+            "effect": {
+              "type": "refinement"
+            }
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodEffects",
+        "effect": {
+          "type": "refinement"
+        },
+        "description": "The base64-encoded entity ID of the SAML entity to delete"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}

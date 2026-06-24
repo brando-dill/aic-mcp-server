@@ -27,3 +27,8 @@ export { listSocialProvidersTool } from './listSocialProviders.js';
 export { getSocialProviderTool } from './getSocialProvider.js';
 export { setSocialProviderTool } from './setSocialProvider.js';
 export { deleteSocialProviderTool } from './deleteSocialProvider.js';
+export { getSamlEntityTool } from './getSamlEntity.js';
+export { createSamlHostedEntityTool } from './createSamlHostedEntity.js';
+export { createSamlRemoteEntityTool } from './createSamlRemoteEntity.js';
+export { updateSamlEntityTool } from './updateSamlEntity.js';
+export { deleteSamlEntityTool } from './deleteSamlEntity.js';

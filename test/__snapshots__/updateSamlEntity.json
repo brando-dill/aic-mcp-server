@@ -1,0 +1,111 @@
+{
+  "name": "updateSamlEntity",
+  "title": "Update SAML 2.0 Entity",
+  "description": "Update an existing SAML 2.0 entity configuration using a read-merge-write pattern. Fetches the current entity configuration, strips _rev, merges the caller-supplied overrides on top, and PUTs the merged payload back. Fields not supplied in entityConfig are preserved from the existing configuration.",
+  "scopes": [
+    "fr:am:*"
+  ],
+  "inputSchema": {
+    "realm": {
+      "_def": {
+        "values": [
+          "alpha",
+          "bravo"
+        ],
+        "typeName": "ZodEnum",
+        "description": "The realm containing the entity (alpha or bravo)"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "location": {
+      "_def": {
+        "values": [
+          "hosted",
+          "remote"
+        ],
+        "typeName": "ZodEnum",
+        "description": "Whether the entity is hosted or remote"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "entityId64": {
+      "_def": {
+        "schema": {
+          "_def": {
+            "schema": {
+              "_def": {
+                "checks": [
+                  {
+                    "kind": "min",
+                    "value": 1,
+                    "message": "Value cannot be empty"
+                  }
+                ],
+                "typeName": "ZodString",
+                "coerce": false
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "typeName": "ZodEffects",
+            "effect": {
+              "type": "refinement"
+            }
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodEffects",
+        "effect": {
+          "type": "refinement"
+        },
+        "description": "The base64-encoded entity ID of the SAML entity to update"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "entityConfig": {
+      "_def": {
+        "keyType": {
+          "_def": {
+            "checks": [],
+            "typeName": "ZodString",
+            "coerce": false
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "valueType": {
+          "_def": {
+            "typeName": "ZodAny"
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          },
+          "_any": true
+        },
+        "typeName": "ZodRecord",
+        "description": "Partial or full entity configuration fields to merge into the existing entity"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}

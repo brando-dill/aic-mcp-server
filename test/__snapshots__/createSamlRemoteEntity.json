@@ -1,0 +1,85 @@
+{
+  "name": "createSamlRemoteEntity",
+  "title": "Create SAML 2.0 Remote Entity",
+  "description": "Import a remote SAML 2.0 entity configuration into AM using the POST _action=importEntity endpoint. A remote entity represents a federation partner (e.g., an external service provider or identity provider). Supply either standardMetadata (XML metadata string) or entityConfig (structured object) — standardMetadata takes precedence if both are provided.",
+  "scopes": [
+    "fr:am:*"
+  ],
+  "inputSchema": {
+    "realm": {
+      "_def": {
+        "values": [
+          "alpha",
+          "bravo"
+        ],
+        "typeName": "ZodEnum",
+        "description": "The realm to import the entity into (alpha or bravo)"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "standardMetadata": {
+      "_def": {
+        "innerType": {
+          "_def": {
+            "checks": [],
+            "typeName": "ZodString",
+            "coerce": false
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodOptional",
+        "description": "Standard SAML metadata XML string to import. Takes precedence over entityConfig if both are supplied."
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "entityConfig": {
+      "_def": {
+        "innerType": {
+          "_def": {
+            "keyType": {
+              "_def": {
+                "checks": [],
+                "typeName": "ZodString",
+                "coerce": false
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "valueType": {
+              "_def": {
+                "typeName": "ZodAny"
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              },
+              "_any": true
+            },
+            "typeName": "ZodRecord"
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodOptional",
+        "description": "Structured entity configuration object. Used when standardMetadata is not available."
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}
