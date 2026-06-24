@@ -13,14 +13,13 @@ export const setSecretTool = {
   description: 'Create or update an environment secret (ESV) in PingOne AIC',
   scopes: SCOPES,
   annotations: {
+    destructiveHint: false,
     idempotentHint: true,
     openWorldHint: true
   },
   inputSchema: {
     secretId: safePathSegmentSchema.describe('Secret ID (format: esv-*)'),
-    valueBase64: z
-      .string()
-      .describe('Base64-encoded value for the secret'),
+    valueBase64: z.string().describe('Base64-encoded value for the secret'),
     description: z.string().optional().describe("Optional description of the secret's purpose"),
     encoding: z
       .enum(['generic', 'pem', 'base64hmac'])
