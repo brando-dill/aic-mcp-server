@@ -1,0 +1,9 @@
+{
+  "name": "getCookieDomains",
+  "title": "Get Cookie Domains",
+  "description": "Retrieve the configured cookie domains for the tenant",
+  "scopes": [
+    "fr:idc:esv:read"
+  ],
+  "inputSchema": {}
+}

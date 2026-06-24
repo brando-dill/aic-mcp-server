@@ -1,0 +1,34 @@
+{
+  "name": "setCookieDomains",
+  "title": "Set Cookie Domains",
+  "description": "Set cookie domains for the tenant",
+  "scopes": [
+    "fr:idc:esv:update"
+  ],
+  "inputSchema": {
+    "domains": {
+      "_def": {
+        "type": {
+          "_def": {
+            "checks": [],
+            "typeName": "ZodString",
+            "coerce": false
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "minLength": null,
+        "maxLength": null,
+        "exactLength": null,
+        "typeName": "ZodArray",
+        "description": "Array of cookie domain strings"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "getCustomDomains",
+  "title": "Get Custom Domains",
+  "description": "Retrieve custom domains configured for a realm",
+  "scopes": [
+    "fr:idc:esv:read"
+  ],
+  "inputSchema": {
+    "realm": {
+      "_def": {
+        "values": [
+          "alpha",
+          "bravo"
+        ],
+        "typeName": "ZodEnum",
+        "description": "The realm to get custom domains for"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}

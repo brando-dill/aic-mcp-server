@@ -1,0 +1,41 @@
+{
+  "name": "setSsoCookieConfig",
+  "title": "Set SSO Cookie Config",
+  "description": "Set the SSO cookie configuration for the tenant",
+  "scopes": [
+    "fr:idc:esv:update"
+  ],
+  "inputSchema": {
+    "ssoCookieConfig": {
+      "_def": {
+        "keyType": {
+          "_def": {
+            "checks": [],
+            "typeName": "ZodString",
+            "coerce": false
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "valueType": {
+          "_def": {
+            "typeName": "ZodAny"
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          },
+          "_any": true
+        },
+        "typeName": "ZodRecord",
+        "description": "Partial or full SSO cookie configuration object"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}

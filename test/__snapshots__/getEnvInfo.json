@@ -1,0 +1,9 @@
+{
+  "name": "getEnvInfo",
+  "title": "Get Environment Info",
+  "description": "Retrieve environment information for the tenant",
+  "scopes": [
+    "fr:idc:esv:read"
+  ],
+  "inputSchema": {}
+}

@@ -4,6 +4,7 @@ import * as logTools from '../tools/logs/index.js';
 import * as themeTools from '../tools/themes/index.js';
 import * as esvTools from '../tools/esv/index.js';
 import * as featureManagementTools from '../tools/featureManagement/index.js';
+import * as tenantConfigTools from '../tools/tenantConfig/index.js';
 import * as amTools from '../tools/am/index.js';
 import * as applicationTools from '../tools/applications/index.js';
 
@@ -20,7 +21,8 @@ export function getAllTools(): Tool[] {
     ...(Object.values(logTools) as Tool[]),
     ...(Object.values(themeTools) as Tool[]),
     ...(Object.values(esvTools) as Tool[]),
-    ...(Object.values(featureManagementTools) as Tool[])
+    ...(Object.values(featureManagementTools) as Tool[]),
+    ...(Object.values(tenantConfigTools) as Tool[])
   ];
 
   // Only include AM tools in non-Docker mode (requires browser-based PKCE auth)

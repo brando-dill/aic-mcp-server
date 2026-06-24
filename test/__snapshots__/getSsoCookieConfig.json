@@ -1,0 +1,9 @@
+{
+  "name": "getSsoCookieConfig",
+  "title": "Get SSO Cookie Config",
+  "description": "Retrieve the SSO cookie configuration for the tenant",
+  "scopes": [
+    "fr:idc:esv:read"
+  ],
+  "inputSchema": {}
+}

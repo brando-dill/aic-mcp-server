@@ -560,6 +560,70 @@ export const handlers = [
     return HttpResponse.json({ _id: params.policyId });
   }),
 
+  // Tenant Config - custom domains GET
+  http.get('https://*/environment/custom-domains/:realm', ({ params, request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    return HttpResponse.json({ realm: params.realm, domains: ['example.com', 'auth.example.com'] });
+  }),
+
+  // Tenant Config - custom domains PUT
+  http.put('https://*/environment/custom-domains/:realm', async ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    const body = await request.json();
+    return HttpResponse.json(body);
+  }),
+
+  // Tenant Config - cookie domains GET
+  http.get('https://*/environment/cookie-domains', ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    return HttpResponse.json({ domains: ['example.com'] });
+  }),
+
+  // Tenant Config - cookie domains PUT
+  http.put('https://*/environment/cookie-domains', async ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    const body = await request.json();
+    return HttpResponse.json(body);
+  }),
+
+  // Tenant Config - SSO cookie GET
+  http.get('https://*/environment/sso-cookie', ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    return HttpResponse.json({ cookieName: 'iPlanetDirectoryPro', secureCookie: true, cookieDomain: 'example.com' });
+  }),
+
+  // Tenant Config - SSO cookie PUT
+  http.put('https://*/environment/sso-cookie', async ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    const body = await request.json();
+    return HttpResponse.json(body);
+  }),
+
+  // Tenant Config - environment info GET
+  http.get('https://*/environment/info', ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+
+    return HttpResponse.json({
+      realm: '/alpha',
+      version: '7.x',
+      deploymentType: 'cloud',
+      customDomainStatus: 'active'
+    });
+  }),
+
   // AM - Global service config - GET (generic, for non-CORS global services like OAuth2Provider)
   // Placed after CorsService-specific handlers so CorsService paths are matched first
   http.get('https://*/am/json/global-config/services/:serviceName/configuration', ({ params, request }) => {
