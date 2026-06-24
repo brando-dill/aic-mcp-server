@@ -1,0 +1,45 @@
+{
+  "name": "createCertificate",
+  "title": "Create Certificate",
+  "description": "Create a new server certificate in the environment",
+  "scopes": [
+    "fr:idc:esv:update"
+  ],
+  "inputSchema": {
+    "active": {
+      "_def": {
+        "typeName": "ZodBoolean",
+        "coerce": false,
+        "description": "Whether the certificate should be active"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "certificate": {
+      "_def": {
+        "checks": [],
+        "typeName": "ZodString",
+        "coerce": false,
+        "description": "PEM-encoded certificate"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "privateKey": {
+      "_def": {
+        "checks": [],
+        "typeName": "ZodString",
+        "coerce": false,
+        "description": "PEM-encoded private key"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}

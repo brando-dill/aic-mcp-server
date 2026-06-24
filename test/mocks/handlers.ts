@@ -920,5 +920,50 @@ export const handlers = [
       status: 204,
       headers: { 'x-forgerock-transactionid': 'mock-tx-id-saml-delete' }
     });
+  }),
+
+  // Tenant Config - certificates list (GET all)
+  http.get('https://*/environment/certificates', ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+    return HttpResponse.json({
+      result: [{ _id: 'cert-1', active: true, subject: 'CN=example.com', expireTime: '2025-12-31T00:00:00Z' }],
+      resultCount: 1
+    });
+  }),
+
+  // Tenant Config - get single certificate
+  http.get('https://*/environment/certificates/:id', ({ params, request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+    return HttpResponse.json({
+      _id: params.id,
+      active: true,
+      subject: 'CN=example.com',
+      expireTime: '2025-12-31T00:00:00Z'
+    });
+  }),
+
+  // Tenant Config - create certificate (POST)
+  http.post('https://*/environment/certificates', async ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+    const body = (await request.json()) as Record<string, any>;
+    return HttpResponse.json({ _id: 'new-cert-id', ...body }, { status: 201 });
+  }),
+
+  // Tenant Config - update certificate active flag (PATCH)
+  http.patch('https://*/environment/certificates/:id', async ({ params, request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+    const body = (await request.json()) as Record<string, any>;
+    return HttpResponse.json({ _id: params.id, ...body });
+  }),
+
+  // Tenant Config - delete certificate
+  http.delete('https://*/environment/certificates/:id', ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+    return new HttpResponse(null, { status: 204, headers: { 'x-forgerock-transactionid': 'mock-tx-cert-delete' } });
   })
 ];

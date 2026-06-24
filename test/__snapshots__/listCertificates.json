@@ -1,0 +1,9 @@
+{
+  "name": "listCertificates",
+  "title": "List Certificates",
+  "description": "List all server certificates configured in the environment",
+  "scopes": [
+    "fr:idc:esv:read"
+  ],
+  "inputSchema": {}
+}
