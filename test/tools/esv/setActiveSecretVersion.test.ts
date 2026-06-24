@@ -142,6 +142,19 @@ describe('setActiveSecretVersion', () => {
       expect(() => schema.parse('%2e%2e%2fetc%2fpasswd')).toThrow();
       expect(() => schema.parse('esv%2ftest')).toThrow();
     });
+
+    it('should reject path traversal in version', () => {
+      const schema = setActiveSecretVersionTool.inputSchema.version;
+      expect(() => schema.parse('../etc/passwd')).toThrow();
+      expect(() => schema.parse('1/../2')).toThrow();
+      expect(() => schema.parse('1/2')).toThrow();
+    });
+
+    it('should reject URL-encoded path traversal in version', () => {
+      const schema = setActiveSecretVersionTool.inputSchema.version;
+      expect(() => schema.parse('%2e%2e%2f1')).toThrow();
+      expect(() => schema.parse('1%2f2')).toThrow();
+    });
   });
 
   // ===== ERROR HANDLING TESTS =====

@@ -1,4 +1,3 @@
-import { z } from 'zod';
 import { makeAuthenticatedRequest, createToolResponse } from '../../utils/apiHelpers.js';
 import { formatSuccess } from '../../utils/responseHelpers.js';
 import { safePathSegmentSchema } from '../../utils/validationHelpers.js';
@@ -18,10 +17,9 @@ export const setActiveSecretVersionTool = {
   },
   inputSchema: {
     secretId: safePathSegmentSchema.describe('Secret ID (format: esv-*)'),
-    version: z
-      .string()
-      .min(1)
-      .describe('Version number or identifier to promote to active status (e.g., "2")')
+    version: safePathSegmentSchema.describe(
+      'Version number or identifier to promote to active status (e.g., "2")'
+    )
   },
   async toolFunction({ secretId, version }: { secretId: string; version: string }) {
     try {
