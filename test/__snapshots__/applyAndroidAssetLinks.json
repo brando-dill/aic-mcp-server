@@ -1,0 +1,97 @@
+{
+  "name": "applyAndroidAssetLinks",
+  "title": "Apply Android Asset Links",
+  "description": "Upload or replace the Android Digital Asset Links file (.well-known/assetlinks.json) hosted by PingOne AIC. Required before WebAuthn passkeys can work on Android — the OS fetches this file to verify the app-to-domain binding. The domain must match the WebAuthn relying party ID configured in the journey nodes.",
+  "scopes": [
+    "fr:idm:*"
+  ],
+  "inputSchema": {
+    "domain": {
+      "_def": {
+        "schema": {
+          "_def": {
+            "schema": {
+              "_def": {
+                "checks": [
+                  {
+                    "kind": "min",
+                    "value": 1,
+                    "message": "Value cannot be empty"
+                  }
+                ],
+                "typeName": "ZodString",
+                "coerce": false
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "typeName": "ZodEffects",
+            "effect": {
+              "type": "refinement"
+            }
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodEffects",
+        "effect": {
+          "type": "refinement"
+        },
+        "description": "FQDN of the AIC tenant or custom domain that serves the file (e.g. \"openam-example.forgeblocks.com\")"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "assetLinks": {
+      "_def": {
+        "type": {
+          "_def": {
+            "keyType": {
+              "_def": {
+                "checks": [],
+                "typeName": "ZodString",
+                "coerce": false
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "valueType": {
+              "_def": {
+                "typeName": "ZodAny"
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              },
+              "_any": true
+            },
+            "typeName": "ZodRecord"
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "minLength": {
+          "value": 1
+        },
+        "maxLength": null,
+        "exactLength": null,
+        "typeName": "ZodArray",
+        "description": "Array of asset link objects. Each object should contain \"relation\" (array of permission strings), \"target\" with \"namespace\", \"package_name\", and \"sha256_cert_fingerprints\"."
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}

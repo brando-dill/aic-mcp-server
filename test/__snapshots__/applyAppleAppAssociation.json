@@ -1,0 +1,114 @@
+{
+  "name": "applyAppleAppAssociation",
+  "title": "Apply Apple App Site Association",
+  "description": "Upload or replace the Apple App Site Association file (.well-known/apple-app-site-association) hosted by PingOne AIC. Required before WebAuthn passkeys can work on iOS — Apple fetches this file to verify the app-to-domain binding via Associated Domains. The domain must match the WebAuthn relying party ID configured in the journey nodes.",
+  "scopes": [
+    "fr:idm:*"
+  ],
+  "inputSchema": {
+    "domain": {
+      "_def": {
+        "schema": {
+          "_def": {
+            "schema": {
+              "_def": {
+                "checks": [
+                  {
+                    "kind": "min",
+                    "value": 1,
+                    "message": "Value cannot be empty"
+                  }
+                ],
+                "typeName": "ZodString",
+                "coerce": false
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "typeName": "ZodEffects",
+            "effect": {
+              "type": "refinement"
+            }
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "typeName": "ZodEffects",
+        "effect": {
+          "type": "refinement"
+        },
+        "description": "FQDN of the AIC tenant or custom domain that serves the file (e.g. \"openam-example.forgeblocks.com\")"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "applinks": {
+      "_def": {
+        "keyType": {
+          "_def": {
+            "checks": [],
+            "typeName": "ZodString",
+            "coerce": false
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "valueType": {
+          "_def": {
+            "typeName": "ZodAny"
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          },
+          "_any": true
+        },
+        "typeName": "ZodRecord",
+        "description": "Apple applinks object. Should contain a \"details\" array of objects with \"appIDs\" (format: \"<TeamID>.<BundleID>\") and \"components\" (URL path components to match)."
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "webcredentials": {
+      "_def": {
+        "keyType": {
+          "_def": {
+            "checks": [],
+            "typeName": "ZodString",
+            "coerce": false
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          }
+        },
+        "valueType": {
+          "_def": {
+            "typeName": "ZodAny"
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          },
+          "_any": true
+        },
+        "typeName": "ZodRecord",
+        "description": "Apple webcredentials object. Should contain an \"apps\" array of app IDs (format: \"<TeamID>.<BundleID>\")."
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    }
+  }
+}

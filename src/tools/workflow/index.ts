@@ -4,6 +4,8 @@ export { applySocialLoginExperienceTool } from './applySocialLoginExperience.js'
 export { applyJourneyChangeTool } from './applyJourneyChange.js';
 export { applyApplicationConfigurationTool } from './applyApplicationConfiguration.js';
 export { applyEnvironmentConfigurationTool } from './applyEnvironmentConfiguration.js';
+export { applyAndroidAssetLinksTool } from './applyAndroidAssetLinks.js';
+export { applyAppleAppAssociationTool } from './applyAppleAppAssociation.js';
 export { readAuditLogsTool } from './readAuditLogs.js';
 export { deleteJourneyConfigurationTool } from './deleteJourneyConfiguration.js';
 export { deleteApplicationConfigurationTool } from './deleteApplicationConfiguration.js';

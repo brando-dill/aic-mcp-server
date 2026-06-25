@@ -11,7 +11,8 @@ export const applyEnvironmentConfigurationTool = {
   name: 'applyEnvironmentConfiguration',
   title: 'Apply Environment Configuration',
   description:
-    'Apply one or more environment-level configuration targets in a single call. Each supplied target is processed independently; partial success is allowed. Returns a results map with success/error per target. At least one target must be supplied.',
+    'Apply one or more environment-level configuration targets in a single call. Each supplied target is processed independently; partial success is allowed. Returns a results map with success/error per target. At least one target must be supplied. ' +
+    'Supports ESV secrets/variables, custom/cookie domains, certificates, SSO cookie config, global AM services, and well-known file hosting for Android asset links and Apple app site association (required for mobile WebAuthn).',
   scopes: SCOPES,
   annotations: {
     destructiveHint: false,
@@ -69,7 +70,29 @@ export const applyEnvironmentConfigurationTool = {
         serviceConfig: z.record(z.any()).describe('Partial service configuration fields to merge')
       })
       .optional()
-      .describe('Merge configuration into a global AM service (GET, strip _rev, merge, PUT)')
+      .describe('Merge configuration into a global AM service (GET, strip _rev, merge, PUT)'),
+    androidAssetLinks: z
+      .object({
+        domain: safePathSegmentSchema.describe(
+          'FQDN of the AIC tenant or custom domain (e.g. "openam-example.forgeblocks.com")'
+        ),
+        assetLinks: z
+          .array(z.record(z.any()))
+          .min(1)
+          .describe('Array of asset link objects with relation, namespace, package_name, sha256_cert_fingerprints')
+      })
+      .optional()
+      .describe('Upload Android Digital Asset Links file to AIC well-known hosting (required for mobile WebAuthn)'),
+    appleAppAssociation: z
+      .object({
+        domain: safePathSegmentSchema.describe(
+          'FQDN of the AIC tenant or custom domain (e.g. "openam-example.forgeblocks.com")'
+        ),
+        applinks: z.record(z.any()).describe('Apple applinks object with details array (appIDs + components)'),
+        webcredentials: z.record(z.any()).describe('Apple webcredentials object with apps array')
+      })
+      .optional()
+      .describe('Upload Apple App Site Association file to AIC well-known hosting (required for iOS WebAuthn)')
   },
   async toolFunction({
     esvSecret,
@@ -78,7 +101,9 @@ export const applyEnvironmentConfigurationTool = {
     cookieDomains,
     certificate,
     ssoCookieConfig,
-    globalAmService
+    globalAmService,
+    androidAssetLinks,
+    appleAppAssociation
   }: {
     esvSecret?: {
       secretId: string;
@@ -110,6 +135,15 @@ export const applyEnvironmentConfigurationTool = {
       serviceName: string;
       serviceConfig: Record<string, unknown>;
     };
+    androidAssetLinks?: {
+      domain: string;
+      assetLinks: Record<string, any>[];
+    };
+    appleAppAssociation?: {
+      domain: string;
+      applinks: Record<string, any>;
+      webcredentials: Record<string, any>;
+    };
   }) {
     // Guard: at least one target must be supplied
     if (
@@ -119,10 +153,12 @@ export const applyEnvironmentConfigurationTool = {
       cookieDomains === undefined &&
       certificate === undefined &&
       ssoCookieConfig === undefined &&
-      globalAmService === undefined
+      globalAmService === undefined &&
+      androidAssetLinks === undefined &&
+      appleAppAssociation === undefined
     ) {
       return createToolResponse(
-        'No configuration targets supplied. Provide at least one of: esvSecret, esvVariable, customDomains, cookieDomains, certificate, ssoCookieConfig, or globalAmService.'
+        'No configuration targets supplied. Provide at least one of: esvSecret, esvVariable, customDomains, cookieDomains, certificate, ssoCookieConfig, globalAmService, androidAssetLinks, or appleAppAssociation.'
       );
     }
 
@@ -321,6 +357,42 @@ export const applyEnvironmentConfigurationTool = {
         results.globalAmService = { success: true };
       } catch (error: any) {
         results.globalAmService = { success: false, error: error.message };
+      }
+    }
+
+    // --- Android Asset Links ---
+    if (androidAssetLinks !== undefined) {
+      try {
+        const { domain, assetLinks } = androidAssetLinks;
+        const url = `https://${aicBaseUrl}/openidm/config/fidc/assetlinks.${domain}`;
+
+        await makeAuthenticatedRequest(url, ['fr:idm:*'], {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: assetLinks })
+        });
+
+        results.androidAssetLinks = { success: true };
+      } catch (error: any) {
+        results.androidAssetLinks = { success: false, error: error.message };
+      }
+    }
+
+    // --- Apple App Site Association ---
+    if (appleAppAssociation !== undefined) {
+      try {
+        const { domain, applinks, webcredentials } = appleAppAssociation;
+        const url = `https://${aicBaseUrl}/openidm/config/fidc/apple-app-site-association.${domain}`;
+
+        await makeAuthenticatedRequest(url, ['fr:idm:*'], {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: { applinks, webcredentials } })
+        });
+
+        results.appleAppAssociation = { success: true };
+      } catch (error: any) {
+        results.appleAppAssociation = { success: false, error: error.message };
       }
     }
 

@@ -1000,5 +1000,15 @@ export const handlers = [
     if (authError) return authError;
     const body = (await request.json()) as Record<string, any>;
     return HttpResponse.json({ ...body });
+  }),
+
+  // Workflow - well-known file hosting (Android asset links, Apple app site association)
+  http.put('https://*/openidm/config/fidc/*', async ({ request }) => {
+    const authError = validateAuthHeader(request);
+    if (authError) return authError;
+    const body = (await request.json()) as Record<string, any>;
+    return HttpResponse.json({ _id: 'fidc/config', ...body }, {
+      headers: { 'x-forgerock-transactionid': 'mock-tx-fidc-put' }
+    });
   })
 ];

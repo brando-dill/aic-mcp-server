@@ -466,5 +466,111 @@ describe('applyEnvironmentConfiguration', () => {
       expect(parsed.results.customDomains.success).toBe(false);
       expect(parsed.results.cookieDomains.success).toBe(true);
     });
+
+    it('androidAssetLinks failure does not abort appleAppAssociation', async () => {
+      server.use(
+        http.put('https://*/openidm/config/fidc/assetlinks.*', () => {
+          return new HttpResponse(JSON.stringify({ error: 'forbidden' }), { status: 403 });
+        })
+      );
+
+      const result = await applyEnvironmentConfigurationTool.toolFunction({
+        androidAssetLinks: {
+          domain: 'openam-example.forgeblocks.com',
+          assetLinks: [{ relation: ['delegate_permission/common.handle_all_urls'], target: { namespace: 'android_app', package_name: 'com.example.app', sha256_cert_fingerprints: ['AA:BB'] } }]
+        },
+        appleAppAssociation: {
+          domain: 'openam-example.forgeblocks.com',
+          applinks: { details: [{ appIDs: ['TEAM.com.example.app'], components: [{ '/': '/*' }] }] },
+          webcredentials: { apps: ['TEAM.com.example.app'] }
+        }
+      });
+
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed.results.androidAssetLinks.success).toBe(false);
+      expect(parsed.results.appleAppAssociation.success).toBe(true);
+    });
+  });
+
+  // ===== REQUEST CONSTRUCTION TESTS (asset links) =====
+  describe('Request Construction — androidAssetLinks + appleAppAssociation', () => {
+    it('androidAssetLinks: PUT to /openidm/config/fidc/assetlinks.<domain>', async () => {
+      await applyEnvironmentConfigurationTool.toolFunction({
+        androidAssetLinks: {
+          domain: 'openam-example.forgeblocks.com',
+          assetLinks: [{ relation: ['delegate_permission/common.handle_all_urls'], target: { namespace: 'android_app', package_name: 'com.example.app', sha256_cert_fingerprints: ['AA:BB'] } }]
+        }
+      });
+
+      const [url, , opts] = getSpy().mock.calls[0];
+      expect(url).toContain('/openidm/config/fidc/assetlinks.openam-example.forgeblocks.com');
+      expect(opts?.method).toBe('PUT');
+    });
+
+    it('androidAssetLinks: body wraps assetLinks in "data"', async () => {
+      const links = [{ relation: ['delegate_permission/common.handle_all_urls'], target: { namespace: 'android_app', package_name: 'com.example.app', sha256_cert_fingerprints: ['AA:BB'] } }];
+
+      await applyEnvironmentConfigurationTool.toolFunction({
+        androidAssetLinks: { domain: 'openam-example.forgeblocks.com', assetLinks: links }
+      });
+
+      const body = JSON.parse(getSpy().mock.calls[0][2]?.body as string);
+      expect(body.data).toEqual(links);
+    });
+
+    it('appleAppAssociation: PUT to /openidm/config/fidc/apple-app-site-association.<domain>', async () => {
+      await applyEnvironmentConfigurationTool.toolFunction({
+        appleAppAssociation: {
+          domain: 'openam-example.forgeblocks.com',
+          applinks: { details: [] },
+          webcredentials: { apps: [] }
+        }
+      });
+
+      const [url, , opts] = getSpy().mock.calls[0];
+      expect(url).toContain('/openidm/config/fidc/apple-app-site-association.openam-example.forgeblocks.com');
+      expect(opts?.method).toBe('PUT');
+    });
+
+    it('appleAppAssociation: body nests applinks and webcredentials under "data"', async () => {
+      const applinks = { details: [{ appIDs: ['TEAM.com.example.app'], components: [] }] };
+      const webcredentials = { apps: ['TEAM.com.example.app'] };
+
+      await applyEnvironmentConfigurationTool.toolFunction({
+        appleAppAssociation: { domain: 'openam-example.forgeblocks.com', applinks, webcredentials }
+      });
+
+      const body = JSON.parse(getSpy().mock.calls[0][2]?.body as string);
+      expect(body.data.applinks).toEqual(applinks);
+      expect(body.data.webcredentials).toEqual(webcredentials);
+    });
+  });
+
+  // ===== RESPONSE HANDLING TESTS (asset links) =====
+  describe('Response Handling — androidAssetLinks + appleAppAssociation', () => {
+    it('androidAssetLinks: success appears in results map', async () => {
+      const result = await applyEnvironmentConfigurationTool.toolFunction({
+        androidAssetLinks: {
+          domain: 'openam-example.forgeblocks.com',
+          assetLinks: [{ relation: ['delegate_permission/common.handle_all_urls'], target: {} }]
+        }
+      });
+
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed.results.androidAssetLinks.success).toBe(true);
+    });
+
+    it('appleAppAssociation: success appears in results map', async () => {
+      const result = await applyEnvironmentConfigurationTool.toolFunction({
+        appleAppAssociation: {
+          domain: 'openam-example.forgeblocks.com',
+          applinks: { details: [] },
+          webcredentials: { apps: [] }
+        }
+      });
+
+      const parsed = JSON.parse(result.content[0].text);
+      expect(parsed.results.appleAppAssociation.success).toBe(true);
+    });
   });
 });

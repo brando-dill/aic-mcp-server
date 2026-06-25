@@ -1,7 +1,7 @@
 {
   "name": "applyEnvironmentConfiguration",
   "title": "Apply Environment Configuration",
-  "description": "Apply one or more environment-level configuration targets in a single call. Each supplied target is processed independently; partial success is allowed. Returns a results map with success/error per target. At least one target must be supplied.",
+  "description": "Apply one or more environment-level configuration targets in a single call. Each supplied target is processed independently; partial success is allowed. Returns a results map with success/error per target. At least one target must be supplied. Supports ESV secrets/variables, custom/cookie domains, certificates, SSO cookie config, global AM services, and well-known file hosting for Android asset links and Apple app site association (required for mobile WebAuthn).",
   "scopes": [
     "fr:idc:esv:update",
     "fr:idc:esv:read",
@@ -222,6 +222,66 @@
         },
         "typeName": "ZodOptional",
         "description": "Merge configuration into a global AM service (GET, strip _rev, merge, PUT)"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "androidAssetLinks": {
+      "_def": {
+        "innerType": {
+          "_def": {
+            "unknownKeys": "strip",
+            "catchall": {
+              "_def": {
+                "typeName": "ZodNever"
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "typeName": "ZodObject"
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          },
+          "_cached": null
+        },
+        "typeName": "ZodOptional",
+        "description": "Upload Android Digital Asset Links file to AIC well-known hosting (required for mobile WebAuthn)"
+      },
+      "~standard": {
+        "version": 1,
+        "vendor": "zod"
+      }
+    },
+    "appleAppAssociation": {
+      "_def": {
+        "innerType": {
+          "_def": {
+            "unknownKeys": "strip",
+            "catchall": {
+              "_def": {
+                "typeName": "ZodNever"
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "typeName": "ZodObject"
+          },
+          "~standard": {
+            "version": 1,
+            "vendor": "zod"
+          },
+          "_cached": null
+        },
+        "typeName": "ZodOptional",
+        "description": "Upload Apple App Site Association file to AIC well-known hosting (required for iOS WebAuthn)"
       },
       "~standard": {
         "version": 1,
